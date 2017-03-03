@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Text.RegularExpressions;
+using Fclp.Internals.Extensions;
 using Kontur.GameStats.Server.Exceptions;
 using Kontur.GameStats.Server.Routing.Attributes;
 using Newtonsoft.Json;
@@ -22,48 +23,50 @@ namespace Kontur.GameStats.Server.Routing
         private readonly TController controller;
         private readonly Dictionary<Regex, MethodInfo> putMethods;
         private readonly Dictionary<Regex, MethodInfo> getMethods;
+        private readonly Dictionary<MethodInfo, ParameterInfo[]> parametersCache;
 
         public RouteHandler(TController controller)
         {
             this.controller = controller;
 
+            parametersCache = new Dictionary<MethodInfo, ParameterInfo[]>();
             putMethods = GetMethods(typeof(TController), isPut: true);
             getMethods = GetMethods(typeof(TController), isPut: false);
         }
 
-        public void Put(string route, string json)
+        public KeyValuePair<GroupCollection, MethodInfo> GetMatch(string route, Dictionary<Regex, MethodInfo> methods)
         {
-            var regex = putMethods.Keys.FirstOrDefault(x => x.IsMatch(route));
+            var regex = methods.Keys.FirstOrDefault(x => x.IsMatch(route));
             if (regex == null)
                 throw new InvalidRequestException("Invalid Request");
 
-            var methodInfo = putMethods[regex];
-            var groups = regex.Match(route).Groups;
-            var parameters = putMethods[regex].GetParameters();
-            var arguments = parameters
-                .Skip(1)
-                .Select(x => GetParameter(x, groups[x.Name].Value));
+            return new KeyValuePair<GroupCollection, MethodInfo>(regex.Match(route).Groups, methods[regex]);
+        }
 
-            var parameterType = parameters.First().ParameterType;
-            var argumentsList = new List<object> {JsonConvert.DeserializeObject(json, parameterType)};
-            argumentsList.AddRange(arguments);
+        public List<object> GetArguments(KeyValuePair<GroupCollection, MethodInfo> match, int skipCount = 0)
+        {
+            return parametersCache[match.Value]
+                .Skip(skipCount)
+                .Select(x => GetParameter(x, match.Key[x.Name].Value))
+                .ToList();
+        }
 
-            methodInfo.Invoke(controller, argumentsList.ToArray());
+        public void Put(string route, string json)
+        {
+            var match = GetMatch(route, putMethods);
+
+            var jsonParameter = JsonConvert.DeserializeObject(json, parametersCache[match.Value].First().ParameterType);
+            var argumentsList = new List<object> {jsonParameter};
+            argumentsList.AddRange(GetArguments(match, 1));
+
+            match.Value.Invoke(controller, argumentsList.ToArray());
         }
 
         public string Get(string route)
         {
-            var regex = getMethods.Keys.FirstOrDefault(x => x.IsMatch(route));
-            if (regex == null)
-                throw new InvalidRequestException("Invalid Request");
-
-            var methodInfo = getMethods[regex];
-            var groups = regex.Match(route).Groups;
-            var arguments = getMethods[regex].GetParameters()
-                .Select(x => GetParameter(x, groups[x.Name].Value))
-                .ToArray();
-
-            return JsonConvert.SerializeObject(methodInfo.Invoke(controller, arguments));
+            var match = GetMatch(route, getMethods);
+            var arguments = GetArguments(match);
+            return JsonConvert.SerializeObject(match.Value.Invoke(controller, arguments.ToArray()));
         }
 
         private static object GetParameter(ParameterInfo parameterInfo, string value)
@@ -87,13 +90,16 @@ namespace Kontur.GameStats.Server.Routing
             }
         }
 
-        private static Dictionary<Regex, MethodInfo> GetMethods(Type type, bool isPut)
+        private Dictionary<Regex, MethodInfo> GetMethods(Type type, bool isPut)
         {
-            return type
-                .GetMethods()
+            var methods = type.GetMethods(BindingFlags.Public | BindingFlags.Instance)
                 .Where(x => x.GetCustomAttributes<RouteAttribute>().Any() &&
                             x.GetCustomAttributes<PutAttribute>().Any() == isPut)
                 .ToDictionary(x => x.GetCustomAttributes<RouteAttribute>().Single().Regex, x => x);
+
+            methods.Values.ForEach(x => parametersCache[x] = x.GetParameters());
+
+            return methods;
         }
     }
 }
