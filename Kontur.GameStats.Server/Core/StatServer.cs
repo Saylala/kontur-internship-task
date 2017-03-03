@@ -1,16 +1,11 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Net;
-using System.Reflection;
-using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
-using Kontur.GameStats.Server.Attributes;
 using Kontur.GameStats.Server.Exceptions;
+using Kontur.GameStats.Server.Routing;
 using log4net;
-using Newtonsoft.Json;
 
 namespace Kontur.GameStats.Server.Core
 {
@@ -23,16 +18,12 @@ namespace Kontur.GameStats.Server.Core
         private Thread listenerThread;
         private bool disposed;
         private volatile bool isRunning;
-        private readonly Controller controller;
-        private readonly Dictionary<Regex, MethodInfo> putMethods;
-        private readonly Dictionary<Regex, MethodInfo> getMethods;
+        private readonly RouteHandler<Controller> routeHandler;
 
         public StatServer()
         {
-            controller = new Controller();
+            routeHandler = RouteHandler.Create(new Controller());
             listener = new HttpListener();
-            putMethods = GetMethods(typeof(Controller), true);
-            getMethods = GetMethods(typeof(Controller), false);
         }
 
         public void Start(string prefix)
@@ -120,13 +111,13 @@ namespace Kontur.GameStats.Server.Core
             }
             catch (NotFoundException error)
             {
-                logger.Error(error.ToString());
-                listenerContext.Response.StatusCode = (int)HttpStatusCode.NotFound;
+                logger.Error(error);
+                listenerContext.Response.StatusCode = (int) HttpStatusCode.NotFound;
             }
             catch (Exception error)
             {
-                logger.Error(error.ToString());
-                listenerContext.Response.StatusCode = (int)HttpStatusCode.BadRequest;
+                logger.Error(error);
+                listenerContext.Response.StatusCode = (int) HttpStatusCode.BadRequest;
             }
 
             using (var writer = new StreamWriter(listenerContext.Response.OutputStream))
@@ -136,33 +127,17 @@ namespace Kontur.GameStats.Server.Core
         private string GetResponse(HttpListenerContext listenerContext)
         {
             var route = listenerContext.Request.Url.AbsolutePath;
-
-            var isGet = listenerContext.Request.HttpMethod == "GET";
-            var dict = isGet ? getMethods : putMethods;
-
-            var regex = dict.Keys.FirstOrDefault(x => x.IsMatch(route));
-            if (regex == null)
-                throw new InvalidRequestException("Invalid Request");
-            var groups = regex.Match(route).Groups;
-
-            var arguments = Enumerable.Range(1, groups.Count - 1).Select(x => (object)groups[x].Value).ToList();
-
-            if (!isGet)
+            switch (listenerContext.Request.HttpMethod)
             {
-                var json = new StreamReader(listenerContext.Request.InputStream).ReadToEnd();
-                var parameterType = dict[regex].GetParameters().Last().ParameterType;
-                arguments.Add(JsonConvert.DeserializeObject(json, parameterType));
+                case "GET":
+                    return routeHandler.Get(route);
+                case "PUT":
+                    var data = new StreamReader(listenerContext.Request.InputStream).ReadToEnd();
+                    routeHandler.Put(route, data);
+                    return string.Empty;
+                default:
+                    throw new InvalidRequestException($"Unsupported method : {listenerContext.Request.HttpMethod}");
             }
-
-            return (string)dict[regex].Invoke(controller, arguments.ToArray());
-        }
-
-        private Dictionary<Regex, MethodInfo> GetMethods(Type type, bool isPut)
-        {
-            return type
-                .GetMethods()
-                .Where(x => x.GetCustomAttributes<RegexAttribute>().Any() && (x.GetCustomAttributes<PutAttribute>().Any() == isPut))
-                .ToDictionary(x => x.GetCustomAttributes<RegexAttribute>().Single().Regex, x => x);
         }
     }
 }
