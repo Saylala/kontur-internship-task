@@ -24,12 +24,16 @@ namespace Kontur.GameStats.Server.Models
 
         [JsonIgnore]
         public virtual List<NameCountEntry> ServersPopularity { get; set; }
+
         [JsonIgnore]
         public virtual List<NameCountEntry> GameModePopularity { get; set; }
+
         [JsonIgnore]
         public virtual List<DayCountEntry> MatchesPerDay { get; set; }
+
         [JsonIgnore]
         public int TotalKills { get; set; }
+
         [JsonIgnore]
         public int TotalDeaths { get; set; }
     }

@@ -5,7 +5,9 @@ namespace Kontur.GameStats.Server.Models.Serialization
 {
     public class ServerStatistics
     {
-        public ServerStatistics() { }
+        public ServerStatistics()
+        {
+        }
 
         public ServerStatistics(Models.ServerStatistics statistics)
         {

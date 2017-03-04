@@ -64,25 +64,22 @@ namespace Kontur.GameStats.Server.Core
         [Route("/reports/recent-matches[/<count>]")]
         public List<RecentMatch> GetRecentMatchesInfo(int count = 5)
         {
-            count = Clamp(0, 50, count);
-            return statistics.GetRecentMatches(count);
+            return statistics.GetRecentMatches(Clamp(count));
         }
 
         [Route("/reports/best-players[/<count>]")]
         public List<BestPlayer> GetBestPlayersInfo(int count = 5)
         {
-            count = Clamp(0, 50, count);
-            return statistics.GetBestPlayers(count);
+            return statistics.GetBestPlayers(Clamp(count));
         }
 
         [Route("/reports/popular-servers[/<count>]")]
         public List<PopularServer> GetPopularServersInfo(int count = 5)
         {
-            count = Clamp(0, 50, count);
-            return statistics.GetPopularServers(count);
+            return statistics.GetPopularServers(Clamp(count));
         }
 
-        private static int Clamp(int left, int right, int value)
+        private static int Clamp(int value, int left = 0, int right = 50)
         {
             return value < left ? left : (value > right ? right : value);
         }

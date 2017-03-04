@@ -114,6 +114,7 @@
     <Compile Include="Core\StatServer.cs" />
     <Compile Include="Core\EntryPoint.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Tests\IntegrationTests.cs" />
     <Compile Include="Tests\RouteHandlingTests.cs" />
     <Compile Include="Tests\SerializationTests.cs" />
   </ItemGroup>
