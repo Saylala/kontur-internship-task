@@ -1,5 +1,6 @@
 ﻿using System.Data.Entity;
 using Kontur.GameStats.Server.Models;
+using SQLite.CodeFirst;
 
 namespace Kontur.GameStats.Server.Database
 {
@@ -7,6 +8,13 @@ namespace Kontur.GameStats.Server.Database
     {
         public DatabaseContext() : base("DefaultConnection")
         {
+        }
+
+        protected override void OnModelCreating(DbModelBuilder modelBuilder)
+        {
+            var model = modelBuilder.Build(Database.Connection);
+            IDatabaseCreator sqliteDatabaseCreator = new SqliteDatabaseCreator();
+            sqliteDatabaseCreator.Create(Database, model);
         }
 
         public DbSet<ServerInfo> Servers { get; set; }

@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using System.Net;
 using System.Text;
 using Kontur.GameStats.Server.Core;
@@ -15,6 +16,7 @@ namespace Kontur.GameStats.Server.Tests
         [SetUp]
         public void SetUp()
         {
+            AppDomain.CurrentDomain.SetData("DataDirectory", Directory.GetCurrentDirectory());
             using (var databaseContext = new DatabaseContext())
                 databaseContext.Database.Delete();
             server = new StatServer();
@@ -36,6 +38,7 @@ namespace Kontur.GameStats.Server.Tests
             request.Method = "PUT";
             var bytes = Encoding.UTF8.GetBytes(data);
             request.GetRequestStream().Write(bytes, 0, bytes.Length);
+            request.GetResponse();
         }
 
         public string Get(string path)
