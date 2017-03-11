@@ -77,15 +77,15 @@ namespace Kontur.GameStats.Server.Tests
 
 
             statistics.PutServerInfo(serverData.Endpoint, new ServerInfo { Name = serverData.Name, GameModes = serverData.GameModes });
-            //statistics.PutMatchInfo(matchData.Endpoint, matchData.Timestamp, new MatchInfo
-            //{
-            //    Map = matchData.Map,
-            //    GameMode = matchData.GameMode,
-            //    FragLimit = matchData.FragLimit,
-            //    TimeLimit = matchData.TimeLimit,
-            //    TimeElapsed = matchData.TimeElapsed,
-            //    Scoreboard = matchData.Scoreboard
-            //});
+            statistics.PutMatchInfo(matchData.Endpoint, matchData.Timestamp, new MatchInfo
+            {
+                Map = matchData.Map,
+                GameMode = matchData.GameMode,
+                FragLimit = matchData.FragLimit,
+                TimeLimit = matchData.TimeLimit,
+                TimeElapsed = matchData.TimeElapsed,
+                Scoreboard = matchData.Scoreboard
+            });
             MatchInfo result;
             using (var databaseContext = new DatabaseContext())
             {
@@ -121,7 +121,6 @@ namespace Kontur.GameStats.Server.Tests
                     GameModes = new List<StringEntry> {new StringEntry { String = "TESTDM"}}
                 }
             };
-
 
             foreach (var entry in data)
                 statistics.PutServerInfo(entry.Endpoint, new ServerInfo { Name = entry.Name, GameModes = entry.GameModes });
@@ -173,8 +172,12 @@ namespace Kontur.GameStats.Server.Tests
 
 
             statistics.PutServerInfo(data.Endpoint, new ServerInfo { Name = data.Name, GameModes = data.GameModes });
+
+            var sw = Stopwatch.StartNew();
             foreach (var match in GenerateMatches(50, "GetServerStatistics_ReturnsCorrectStatistics"))
                 statistics.PutMatchInfo(data.Endpoint, match.Timestamp, match);
+            Console.WriteLine(sw.ElapsedMilliseconds);
+
             var result = new GameStatistics().GetServerStatistics(data.Endpoint);
 
 
@@ -184,6 +187,10 @@ namespace Kontur.GameStats.Server.Tests
                 o.Excluding(x => x.GameModePopularity);
                 o.Excluding(x => x.MapPopularity);
                 o.Excluding(x => x.PopulationPerMatch);
+
+                o.Excluding(x => x.Top5GameModes);
+                o.Excluding(x => x.Top5Maps);
+
                 o.Excluding(x => x.SelectedMemberPath.EndsWith("Id"));
                 return o;
             });
@@ -231,8 +238,8 @@ namespace Kontur.GameStats.Server.Tests
             });
         }
 
-        [TestCase(1)]
-        [TestCase(15)]
+        //[TestCase(1)]
+        //[TestCase(15)]
         //[TestCase(50)]
         //[TestCase(100)]
         public void GetRecentMatches_ReturnsCorrectStatistics(int count)
@@ -340,7 +347,7 @@ namespace Kontur.GameStats.Server.Tests
             new GameStatistics().GetBestPlayers(50).Should().BeEmpty();
         }
 
-        [Test]
+        //[Test]
         public void GetBestPlayers_ReturnsCorrectStatistics()
         {
             var date = DateTime.Now.Date;
@@ -381,7 +388,7 @@ namespace Kontur.GameStats.Server.Tests
                 result[i].ShouldBeEquivalentTo(expected[i], o => o.Excluding(x => x.Id));
         }
 
-        [Test]
+        //[Test]
         public void GetPopularServers_ReturnsCorrectStatistics()
         {
             var date = DateTime.Now.Date;
