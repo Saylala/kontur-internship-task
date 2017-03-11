@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Data.Entity.Migrations;
 using System.Globalization;
 using System.Linq;
 using Kontur.GameStats.Server.Exceptions;
@@ -13,9 +12,14 @@ namespace Kontur.GameStats.Server.Database
     {
         private readonly StatisticsUpdater statisticsUpdater;
 
+        private readonly SortedList<DateTime, RecentMatch> recentMatches;
+        private readonly SortedList<double, BestPlayer> bestPlayers;
+        private readonly SortedList<double, PopularServer> popularServers;
+
+
         public GameStatistics()
         {
-            statisticsUpdater = new StatisticsUpdater();
+            statisticsUpdater = new StatisticsUpdater(recentMatches, bestPlayers, popularServers);
             using (var databaseContext = new DatabaseContext())
             {
                 new DatabaseInitializer().InitializeDatabase(databaseContext);
@@ -109,35 +113,17 @@ namespace Kontur.GameStats.Server.Database
 
         public List<RecentMatch> GetRecentMatches(int count)
         {
-            using (var databaseContext = new DatabaseContext())
-            {
-                return databaseContext.RecentMatches
-                    .OrderByDescending(x => x.Timestamp)
-                    .Take(count)
-                    .ToList();
-            }
+            return (List<RecentMatch>) recentMatches.Values;
         }
 
         public List<BestPlayer> GetBestPlayers(int count)
         {
-            using (var databaseContext = new DatabaseContext())
-            {
-                return databaseContext.BestPlayers
-                    .OrderByDescending(x => x.KillToDeathRatio)
-                    .Take(count)
-                    .ToList();
-            }
+            return (List<BestPlayer>) bestPlayers.Values;
         }
 
         public List<PopularServer> GetPopularServers(int count)
         {
-            using (var databaseContext = new DatabaseContext())
-            {
-                return databaseContext.PopularServers
-                    .OrderByDescending(x => x.AverageMatchesPerDay)
-                    .Take(count)
-                    .ToList();
-            }
+            return (List<PopularServer>) popularServers.Values;
         }
     }
 }
