@@ -1,7 +1,9 @@
-﻿using Newtonsoft.Json;
+﻿using System.ComponentModel.DataAnnotations.Schema;
+using Newtonsoft.Json;
 
 namespace Kontur.GameStats.Server.Models
 {
+    [Table("Scores")]
     public class Score
     {
         [JsonIgnore]
@@ -12,7 +14,7 @@ namespace Kontur.GameStats.Server.Models
         public int Kills { get; set; }
         public int Deaths { get; set; }
 
-        [JsonIgnore]
-        public int MatchInfoEntryId { get; set; }
+        //[JsonIgnore]
+        //public int MatchInfoEntryId { get; set; }
     }
 }

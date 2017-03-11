@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using Newtonsoft.Json;
 
 namespace Kontur.GameStats.Server.Models
 {
+    [Table("Matches")]
     public class MatchInfo
     {
         [Key]
@@ -20,6 +22,7 @@ namespace Kontur.GameStats.Server.Models
         public int FragLimit { get; set; }
         public int TimeLimit { get; set; }
         public double TimeElapsed { get; set; }
+
         public virtual List<Score> Scoreboard { get; set; }
 
         [JsonIgnore]

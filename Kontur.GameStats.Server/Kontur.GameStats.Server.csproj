@@ -43,12 +43,12 @@
       <HintPath>..\packages\EntityFramework.6.1.3\lib\net45\EntityFramework.SqlServer.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="FluentAssertions, Version=4.19.0.0, Culture=neutral, PublicKeyToken=33f2691a05b67b6a, processorArchitecture=MSIL">
-      <HintPath>..\packages\FluentAssertions.4.19.0\lib\net45\FluentAssertions.dll</HintPath>
+    <Reference Include="FluentAssertions, Version=4.19.2.0, Culture=neutral, PublicKeyToken=33f2691a05b67b6a, processorArchitecture=MSIL">
+      <HintPath>..\packages\FluentAssertions.4.19.2\lib\net45\FluentAssertions.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="FluentAssertions.Core, Version=4.19.0.0, Culture=neutral, PublicKeyToken=33f2691a05b67b6a, processorArchitecture=MSIL">
-      <HintPath>..\packages\FluentAssertions.4.19.0\lib\net45\FluentAssertions.Core.dll</HintPath>
+    <Reference Include="FluentAssertions.Core, Version=4.19.2.0, Culture=neutral, PublicKeyToken=33f2691a05b67b6a, processorArchitecture=MSIL">
+      <HintPath>..\packages\FluentAssertions.4.19.2\lib\net45\FluentAssertions.Core.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="FluentCommandLineParser, Version=1.4.3.0, Culture=neutral, processorArchitecture=MSIL">
@@ -63,12 +63,8 @@
       <HintPath>..\packages\Newtonsoft.Json.9.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="nunit.framework, Version=3.6.0.0, Culture=neutral, PublicKeyToken=2638cd05610744eb, processorArchitecture=MSIL">
-      <HintPath>..\packages\NUnit.3.6.0\lib\net45\nunit.framework.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="SQLite.CodeFirst, Version=1.3.0.17, Culture=neutral, PublicKeyToken=eb96ba0a78d831a7, processorArchitecture=MSIL">
-      <HintPath>..\packages\SQLite.CodeFirst.1.3.0.17\lib\net45\SQLite.CodeFirst.dll</HintPath>
+    <Reference Include="nunit.framework, Version=3.6.1.0, Culture=neutral, PublicKeyToken=2638cd05610744eb, processorArchitecture=MSIL">
+      <HintPath>..\packages\NUnit.3.6.1\lib\net45\nunit.framework.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="System" />
@@ -95,6 +91,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Database\DatabaseInitializer.cs" />
+    <Compile Include="Models\StringEntry.cs" />
     <Compile Include="Routing\Attributes\PutAttribute.cs" />
     <Compile Include="Core\Controller.cs" />
     <Compile Include="Routing\Attributes\RouteAttribute.cs" />
@@ -121,7 +119,6 @@
     <Compile Include="StatisticsUpdaters\RecentMatchesUpdater.cs" />
     <Compile Include="StatisticsUpdaters\ServerStatisticsUpdater.cs" />
     <Compile Include="StatisticsUpdaters\StatisticsUpdater.cs" />
-    <Compile Include="Models\StringEntry.cs" />
     <Compile Include="Models\NameCountEntry.cs" />
     <Compile Include="Models\PlayerStatistics.cs" />
     <Compile Include="Models\Score.cs" />

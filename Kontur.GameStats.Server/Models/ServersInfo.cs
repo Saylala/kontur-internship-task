@@ -1,6 +1,4 @@
-﻿using Kontur.GameStats.Server.Models.Serialization;
-
-namespace Kontur.GameStats.Server.Models
+﻿namespace Kontur.GameStats.Server.Models
 {
     public class ServersInfo
     {

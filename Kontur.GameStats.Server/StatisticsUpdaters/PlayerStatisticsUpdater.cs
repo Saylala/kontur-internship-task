@@ -8,20 +8,15 @@ namespace Kontur.GameStats.Server.StatisticsUpdaters
 {
     public class PlayerStatisticsUpdater : IStatisticsUpdater
     {
-        public void Update(MatchInfo info)
+        public void Update(MatchInfo info, DatabaseContext databaseContext)
         {
-            using (var databaseContext = new DatabaseContext())
+            foreach (var player in info.Scoreboard)
             {
-                foreach (var player in info.Scoreboard)
-                {
-                    var previous = databaseContext.PlayersStatistics.Find(player.Name);
-                    if (previous == null)
-                        SetFirstEntry(info, player.Name, databaseContext);
-                    else
-                        UpdateEntry(previous, info);
-                }
-
-                databaseContext.SaveChanges();
+                var previous = databaseContext.PlayersStatistics.Find(player.Name);
+                if (previous == null)
+                    SetFirstEntry(info, player.Name, databaseContext);
+                else
+                    UpdateEntry(previous, info);
             }
         }
 
@@ -83,7 +78,7 @@ namespace Kontur.GameStats.Server.StatisticsUpdaters
             previous.AverageMatchesPerDay = (double)previous.MatchesPerDay.Select(x => x.Count).Sum() / previous.MatchesPerDay.Count;
             previous.LastMatchPlayed = lastMatchPlayed;
             previous.KillToDeathRatio = killToDeathRatio;
-            
+
         }
 
         private void UpdateList(List<NameCountEntry> list, string key)

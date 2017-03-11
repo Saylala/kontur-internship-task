@@ -8,18 +8,14 @@ namespace Kontur.GameStats.Server.StatisticsUpdaters
 {
     public class ServerStatisticsUpdater : IStatisticsUpdater
     {
-        public void Update(MatchInfo info)
+        public void Update(MatchInfo info, DatabaseContext databaseContext)
         {
-            using (var databaseContext = new DatabaseContext())
-            {
-                var previous = databaseContext.ServerStatistics.Find(info.Endpoint);
-                if (previous == null)
-                    SetFirstEntry(info, databaseContext);
-                else
-                    UpdateEntry(previous, info);
+            var previous = databaseContext.ServerStatistics.Find(info.Endpoint);
+            if (previous == null)
+                SetFirstEntry(info, databaseContext);
+            else
+                UpdateEntry(previous, info);
 
-                databaseContext.SaveChanges();
-            }
         }
 
         private void SetFirstEntry(MatchInfo info, DatabaseContext databaseContext)
@@ -41,7 +37,11 @@ namespace Kontur.GameStats.Server.StatisticsUpdaters
                         new MatchCountEntry { Key = info.Endpoint + info.Timestamp, Endpoint =  info.Endpoint, TimeStamp = info.Timestamp, Count = info.Scoreboard.Count}
                     },
                 GameModePopularity = new List<NameCountEntry> { new NameCountEntry { Name = info.GameMode, Count = 1 } },
-                MapPopularity = new List<NameCountEntry> { new NameCountEntry { Name = info.Map, Count = 1 } }
+                MapPopularity = new List<NameCountEntry>
+                {
+                    new NameCountEntry { Name = info.Map, Count = 1 }
+
+                }
             });
         }
 

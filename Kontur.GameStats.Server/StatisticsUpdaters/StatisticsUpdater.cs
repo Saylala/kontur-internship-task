@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using Kontur.GameStats.Server.Database;
 using Kontur.GameStats.Server.Models;
 
 namespace Kontur.GameStats.Server.StatisticsUpdaters
@@ -18,10 +19,10 @@ namespace Kontur.GameStats.Server.StatisticsUpdaters
             };
         }
 
-        public void Update(MatchInfo info)
+        public void Update(MatchInfo info, DatabaseContext databaseContext)
         {
             foreach (var statisticsUpdater in updaters)
-                statisticsUpdater.Update(info);
+                statisticsUpdater.Update(info, databaseContext);
         }
     }
 }

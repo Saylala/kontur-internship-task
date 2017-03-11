@@ -1,7 +1,5 @@
 ﻿using System;
-using System.IO;
 using Fclp;
-using log4net.Config;
 
 namespace Kontur.GameStats.Server.Core
 {
@@ -9,9 +7,6 @@ namespace Kontur.GameStats.Server.Core
     {
         public static void Main(string[] args)
         {
-            XmlConfigurator.Configure();
-            AppDomain.CurrentDomain.SetData("DataDirectory", Directory.GetCurrentDirectory());
-
             var commandLineParser = new FluentCommandLineParser<Options>();
 
             commandLineParser

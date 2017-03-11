@@ -20,7 +20,7 @@ namespace Kontur.GameStats.Server.Core
             statistics.PutServerInfo(endpoint, new ServerInfo
             {
                 Name = serverInfo.Name,
-                GameModes = serverInfo.GameModes.Select(x => new StringEntry {String = x}).ToList()
+                GameModes = serverInfo.GameModes.Select(x => new StringEntry { String = x}).ToList()
             });
         }
 

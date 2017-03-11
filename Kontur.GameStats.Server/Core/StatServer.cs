@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Kontur.GameStats.Server.Exceptions;
 using Kontur.GameStats.Server.Routing;
 using log4net;
+using log4net.Config;
 
 namespace Kontur.GameStats.Server.Core
 {
@@ -22,6 +23,9 @@ namespace Kontur.GameStats.Server.Core
 
         public StatServer()
         {
+            XmlConfigurator.Configure();
+            AppDomain.CurrentDomain.SetData("DataDirectory", Directory.GetCurrentDirectory());
+
             routeHandler = RouteHandler.Create(new Controller());
             listener = new HttpListener();
         }

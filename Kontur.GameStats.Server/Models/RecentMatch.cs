@@ -7,12 +7,12 @@ namespace Kontur.GameStats.Server.Models
 {
     public class RecentMatch
     {
-        [Key, ForeignKey("Results")]
+        [Key, ForeignKey("MatchInfo")]
         [JsonIgnore]
-        public string MatchInfoKey { get; set; }
+        public string Key { get; set; }
 
         public string Server { get; set; }
         public DateTime Timestamp { get; set; }
-        public virtual MatchInfo Results { get; set; }
+        public virtual MatchInfo MatchInfo { get; set; }
     }
 }
