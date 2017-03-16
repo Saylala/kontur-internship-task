@@ -1,10 +1,10 @@
 ﻿using Kontur.GameStats.Server.Database;
-using Kontur.GameStats.Server.Models;
+using Kontur.GameStats.Server.Models.DatabaseEntries;
 
 namespace Kontur.GameStats.Server.StatisticsUpdaters
 {
     public interface IStatisticsUpdater
     {
-        void Update(MatchInfo info, DatabaseContext databaseContext);
+        void Update(MatchInfoEntry infoEntry, DatabaseContext databaseContext);
     }
 }

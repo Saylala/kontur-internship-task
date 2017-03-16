@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using Kontur.GameStats.Server.Models.DatabaseEntries;
 
 namespace Kontur.GameStats.Server.Models.Serialization
 {
@@ -9,15 +10,15 @@ namespace Kontur.GameStats.Server.Models.Serialization
         {
         }
 
-        public ServerStatistics(Models.ServerStatistics statistics)
+        public ServerStatistics(ServerStatisticsEntry statisticsEntry)
         {
-            TotalMatchesPlayed = statistics.TotalMatchesPlayed;
-            MaximumMatchesPerDay = statistics.MaximumMatchesPerDay;
-            AverageMatchesPerDay = statistics.AverageMatchesPerDay;
-            MaximumPopulation = statistics.MaximumPopulation;
-            AveragePopulation = statistics.AveragePopulation;
-            Top5GameModes = statistics.Top5GameModes.Select(x => x.String).ToList();
-            Top5Maps = statistics.Top5Maps.Select(x => x.String).ToList();
+            TotalMatchesPlayed = statisticsEntry.TotalMatchesPlayed;
+            MaximumMatchesPerDay = statisticsEntry.MaximumMatchesPerDay;
+            AverageMatchesPerDay = statisticsEntry.AverageMatchesPerDay;
+            MaximumPopulation = statisticsEntry.MaximumPopulation;
+            AveragePopulation = statisticsEntry.AveragePopulation;
+            Top5GameModes = statisticsEntry.Top5GameModes.Select(x => x.String).ToList();
+            Top5Maps = statisticsEntry.Top5Maps.Select(x => x.String).ToList();
         }
 
         public int TotalMatchesPlayed { get; set; }

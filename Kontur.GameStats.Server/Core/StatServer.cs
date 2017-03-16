@@ -7,6 +7,8 @@ using Kontur.GameStats.Server.Exceptions;
 using Kontur.GameStats.Server.Routing;
 using log4net;
 using log4net.Config;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Serialization;
 
 namespace Kontur.GameStats.Server.Core
 {
@@ -25,6 +27,11 @@ namespace Kontur.GameStats.Server.Core
         {
             XmlConfigurator.Configure();
             AppDomain.CurrentDomain.SetData("DataDirectory", Directory.GetCurrentDirectory());
+            JsonConvert.DefaultSettings = () => new JsonSerializerSettings
+            {
+                ContractResolver = new CamelCasePropertyNamesContractResolver(),
+                //DateTimeZoneHandling = DateTimeZoneHandling.Utc
+            };
 
             routeHandler = RouteHandler.Create(new Controller());
             listener = new HttpListener();
@@ -121,10 +128,10 @@ namespace Kontur.GameStats.Server.Core
             catch (Exception error)
             {
                 logger.Error(error);
-                listenerContext.Response.StatusCode = (int) HttpStatusCode.BadRequest;
+                listenerContext.Response.StatusCode = (int)HttpStatusCode.BadRequest;
             }
 
-            using (var writer = new StreamWriter(listenerContext.Response.OutputStream))
+            using (var writer = new StreamWriter(listenerContext.Response.OutputStream, listenerContext.Request.ContentEncoding))
                 writer.WriteLine(result);
         }
 
@@ -136,7 +143,7 @@ namespace Kontur.GameStats.Server.Core
                 case "GET":
                     return routeHandler.Get(route);
                 case "PUT":
-                    var data = new StreamReader(listenerContext.Request.InputStream).ReadToEnd();
+                    var data = new StreamReader(listenerContext.Request.InputStream, listenerContext.Request.ContentEncoding).ReadToEnd();
                     routeHandler.Put(route, data);
                     return string.Empty;
                 default:

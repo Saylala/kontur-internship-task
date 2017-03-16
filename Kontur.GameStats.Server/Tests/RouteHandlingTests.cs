@@ -88,6 +88,12 @@ namespace Kontur.GameStats.Server.Tests
             routeHandler.Put(put, JsonConvert.SerializeObject(entry));
             JsonConvert.DeserializeObject<TestEntity>(routeHandler.Get(get)).ShouldBeEquivalentTo(entry);
         }
+
+        [Test]
+        public void TestMethodThrows()
+        {
+            Assert.Throws<NotFoundException>(() => routeHandler.Get("/t/throws/a/b"));
+        }
     }
 
     internal class TestEntity
@@ -158,6 +164,12 @@ namespace Kontur.GameStats.Server.Tests
                 A = a + '1',
                 B = b + 1
             };
+        }
+
+        [Route("/t/throws/<a>/<b>")]
+        public TestEntity MetodThrows(string a, string b)
+        {
+            throw new NotFoundException($"{a} {b}");
         }
     }
 }

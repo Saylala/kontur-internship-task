@@ -3,7 +3,8 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using Kontur.GameStats.Server.Exceptions;
-using Kontur.GameStats.Server.Models;
+using Kontur.GameStats.Server.Models.DatabaseEntries;
+using Kontur.GameStats.Server.Models.Serialization;
 using Kontur.GameStats.Server.StatisticsUpdaters;
 
 namespace Kontur.GameStats.Server.Database
@@ -12,14 +13,9 @@ namespace Kontur.GameStats.Server.Database
     {
         private readonly StatisticsUpdater statisticsUpdater;
 
-        private readonly SortedList<DateTime, RecentMatch> recentMatches;
-        private readonly SortedList<double, BestPlayer> bestPlayers;
-        private readonly SortedList<double, PopularServer> popularServers;
-
-
         public GameStatistics()
         {
-            statisticsUpdater = new StatisticsUpdater(recentMatches, bestPlayers, popularServers);
+            statisticsUpdater = new StatisticsUpdater();
             using (var databaseContext = new DatabaseContext())
             {
                 new DatabaseInitializer().InitializeDatabase(databaseContext);
@@ -27,10 +23,18 @@ namespace Kontur.GameStats.Server.Database
             }
         }
 
-        public void PutServerInfo(string endpoint, ServerInfo infoEntry)
+        public void PutServerInfo(string endpoint, ServerInfoEntry infoEntry)
         {
             using (var databaseContext = new DatabaseContext())
             {
+                var entry = databaseContext.Servers.Find(endpoint);
+                if (entry != null)
+                {
+                    databaseContext.StringEntries.RemoveRange(entry.GameModes);
+                    databaseContext.Servers.Remove(entry);
+                }
+
+
                 infoEntry.Endpoint = endpoint;
 
                 databaseContext.Servers.Add(infoEntry);
@@ -45,11 +49,11 @@ namespace Kontur.GameStats.Server.Database
                 var entry = databaseContext.Servers.Find(endpoint);
                 if (entry == null)
                     throw new NotFoundException("Entry not found");
-                return entry;
+                return new ServerInfo(entry);
             }
         }
 
-        public void PutMatchInfo(string endpoint, DateTime timestamp, MatchInfo info)
+        public void PutMatchInfo(string endpoint, DateTime timestamp, MatchInfoEntry infoEntry)
         {
             using (var databaseContext = new DatabaseContext())
             {
@@ -57,34 +61,36 @@ namespace Kontur.GameStats.Server.Database
                 if (serverEntry == null)
                     throw new BadRequestException("Bad Request");
 
-                info.Key = endpoint + timestamp.ToString(CultureInfo.InvariantCulture);
-                info.Endpoint = endpoint;
-                info.Timestamp = timestamp;
+                infoEntry.Key = endpoint + timestamp.ToString(CultureInfo.InvariantCulture);
+                infoEntry.Endpoint = endpoint;
+                infoEntry.Timestamp = timestamp;
 
-                databaseContext.Matches.Add(info);
-
-                statisticsUpdater.Update(info, databaseContext);
-
+                databaseContext.Matches.Add(infoEntry);
                 databaseContext.SaveChanges();
             }
+
+            statisticsUpdater.Update(infoEntry);
         }
 
+        // todo fix keys(make composit key)
         public MatchInfo GetMatchInfo(string endpoint, DateTime timestamp)
         {
             using (var databaseContext = new DatabaseContext())
             {
-                var entry = databaseContext.Matches.Find(endpoint, timestamp);
+                var entry = databaseContext.Matches.Find(endpoint+timestamp.ToString(CultureInfo.InvariantCulture));
                 if (entry == null)
                     throw new NotFoundException("Entry not found");
-                return entry;
+                return new MatchInfo(entry);
             }
         }
 
-        public List<ServerInfo> GetServersInfo()
+        public List<ServersInfo> GetServersInfo()
         {
             using (var databaseContext = new DatabaseContext())
             {
                 return databaseContext.Servers
+                    .ToList()
+                    .Select(x => new ServersInfo(x))
                     .ToList();
             }
         }
@@ -96,7 +102,7 @@ namespace Kontur.GameStats.Server.Database
                 var entry = databaseContext.ServerStatistics.Find(endpoint);
                 if (entry == null)
                     throw new NotFoundException("Entry not found");
-                return entry;
+                return new ServerStatistics(entry);
             }
         }
 
@@ -107,23 +113,47 @@ namespace Kontur.GameStats.Server.Database
                 var entry = databaseContext.PlayersStatistics.Find(name);
                 if (entry == null)
                     throw new NotFoundException("Entry not found");
-                return entry;
+                return new PlayerStatistics(entry);
             }
         }
 
         public List<RecentMatch> GetRecentMatches(int count)
         {
-            return (List<RecentMatch>) recentMatches.Values;
+            using (var databaseContext = new DatabaseContext())
+            {
+                return databaseContext.RecentMatches
+                    .Take(count)
+                    .ToList()
+                    .OrderByDescending(x => x.Timestamp)
+                    .Select(x => new RecentMatch(x))
+                    .ToList();
+            }
         }
 
         public List<BestPlayer> GetBestPlayers(int count)
         {
-            return (List<BestPlayer>) bestPlayers.Values;
+            using (var databaseContext = new DatabaseContext())
+            {
+                return databaseContext.BestPlayers
+                    .Take(count)
+                    .ToList()
+                    .OrderByDescending(x => x.KillToDeathRatio)
+                    .Select(x => new BestPlayer(x))
+                    .ToList();
+            }
         }
 
         public List<PopularServer> GetPopularServers(int count)
         {
-            return (List<PopularServer>) popularServers.Values;
+            using (var databaseContext = new DatabaseContext())
+            {
+                return databaseContext.PopularServers
+                    .Take(count)
+                    .ToList()
+                    .OrderByDescending(x => x.AverageMatchesPerDay)
+                    .Select(x => new PopularServer(x))
+                    .ToList();
+            }
         }
     }
 }

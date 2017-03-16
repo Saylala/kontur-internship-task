@@ -1,31 +1,34 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using Kontur.GameStats.Server.Database;
-using Kontur.GameStats.Server.Models;
+using Kontur.GameStats.Server.Models.DatabaseEntries;
 
 namespace Kontur.GameStats.Server.StatisticsUpdaters
 {
     public class StatisticsUpdater
     {
         private readonly List<IStatisticsUpdater> updaters;
-
-        public StatisticsUpdater(SortedList<DateTime, RecentMatch> recentMatches,
-            SortedList<double, BestPlayer> bestPlayers, SortedList<double, PopularServer> popularServers)
+        public StatisticsUpdater()
         {
             updaters = new List<IStatisticsUpdater>
             {
                 new ServerStatisticsUpdater(),
                 new PlayerStatisticsUpdater(),
-                new RecentMatchesUpdater(recentMatches),
-                new BestPlayersUpdater(bestPlayers),
-                new PopularServersUpdater(popularServers)
+                new RecentMatchesUpdater(),
+                new BestPlayersUpdater(),
+                new PopularServersUpdater(),
             };
         }
-
-        public void Update(MatchInfo info, DatabaseContext databaseContext)
+        // todo check and fix statistics updaters (Date related entries)
+        public void Update(MatchInfoEntry infoEntry)
         {
-            foreach (var statisticsUpdater in updaters)
-                statisticsUpdater.Update(info, databaseContext);
+            using (var databaseContext = new DatabaseContext())
+            {
+                foreach (var statisticsUpdater in updaters)
+                    statisticsUpdater.Update(infoEntry, databaseContext);
+
+                databaseContext.SaveChanges();
+            }
+
         }
     }
 }

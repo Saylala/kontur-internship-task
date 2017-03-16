@@ -1,10 +1,7 @@
-﻿using Newtonsoft.Json;
-
-namespace Kontur.GameStats.Server.Models
+﻿namespace Kontur.GameStats.Server.Models.DatabaseEntries
 {
     public class StringEntry
     {
-        [JsonIgnore]
         public int Id { get; set; }
         public string String { get; set; }
     }

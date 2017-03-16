@@ -2,69 +2,71 @@
 using System.Collections.Generic;
 using System.Linq;
 using Kontur.GameStats.Server.Database;
-using Kontur.GameStats.Server.Models;
+using Kontur.GameStats.Server.Models.DatabaseEntries;
 
 namespace Kontur.GameStats.Server.StatisticsUpdaters
 {
     public class PlayerStatisticsUpdater : IStatisticsUpdater
     {
-        public void Update(MatchInfo info, DatabaseContext databaseContext)
+        public void Update(MatchInfoEntry infoEntry, DatabaseContext databaseContext)
         {
-            foreach (var player in info.Scoreboard)
+            foreach (var player in infoEntry.Scoreboard)
             {
                 var previous = databaseContext.PlayersStatistics.Find(player.Name);
                 if (previous == null)
-                    SetFirstEntry(info, player.Name, databaseContext);
+                    SetFirstEntry(infoEntry, player.Name, databaseContext);
                 else
-                    UpdateEntry(previous, info);
+                    UpdateEntry(previous, infoEntry);
             }
         }
 
-        private void SetFirstEntry(MatchInfo info, string name, DatabaseContext databaseContext)
+        private void SetFirstEntry(MatchInfoEntry infoEntry, string name, DatabaseContext databaseContext)
         {
-            var position = info.Scoreboard.FindIndex(x => x.Name == name);
-            var scoreboardPercent = (double)(info.Scoreboard.Count - position - 1) /
-                                    (info.Scoreboard.Count - 1) * 100;
-            databaseContext.PlayersStatistics.Add(new PlayerStatistics
+            var position = infoEntry.Scoreboard.FindIndex(x => x.Name == name);
+            var scoreboardPercent = (double)(infoEntry.Scoreboard.Count - position - 1) /
+                                    (infoEntry.Scoreboard.Count - 1) * 100;
+            databaseContext.PlayersStatistics.Add(new PlayerStatisticsEntry
             {
                 Name = name,
                 TotalMatchesPlayed = 1,
                 TotalMatchesWon = position == 0 ? 1 : 0,
-                FavoriteServer = info.Endpoint,
+                FavoriteServer = infoEntry.Endpoint,
                 UniqueServers = 1,
-                FavoriteGameMode = info.GameMode,
+                FavoriteGameMode = infoEntry.GameMode,
                 AverageScoreboardPercent = scoreboardPercent,
                 MaximumMatchesPerDay = 1,
                 AverageMatchesPerDay = 1,
-                LastMatchPlayed = info.Timestamp,
+                LastMatchPlayed = infoEntry.Timestamp,
                 KillToDeathRatio = 0,
-                ServersPopularity = new List<NameCountEntry> { new NameCountEntry { Name = info.Endpoint, Count = 1 } },
-                GameModePopularity = new List<NameCountEntry> { new NameCountEntry { Name = info.GameMode, Count = 1 } },
-                MatchesPerDay = new List<DayCountEntry> { new DayCountEntry { Day = info.Timestamp.Date, Count = 1 } },
-                TotalKills = info.Scoreboard[position].Kills,
-                TotalDeaths = info.Scoreboard[position].Deaths
+                ServersPopularity = new List<NameCountEntry> { new NameCountEntry { Name = infoEntry.Endpoint, Count = 1 } },
+                GameModePopularity = new List<NameCountEntry> { new NameCountEntry { Name = infoEntry.GameMode, Count = 1 } },
+                MatchesPerDay = new List<DayCountEntry> { new DayCountEntry { Day = infoEntry.Timestamp.Date, Count = 1 } },
+                TotalKills = infoEntry.Scoreboard[position].Kills,
+                TotalDeaths = infoEntry.Scoreboard[position].Deaths
             });
         }
 
-        private void UpdateEntry(PlayerStatistics previous, MatchInfo info)
+        private void UpdateEntry(PlayerStatisticsEntry previous, MatchInfoEntry infoEntry)
         {
-            var position = info.Scoreboard.FindIndex(x => x.Name == previous.Name);
-            var scoreboardPercent = (double)(info.Scoreboard.Count - position - 1) /
-                                    (info.Scoreboard.Count - 1) * 100;
+            var position = infoEntry.Scoreboard.FindIndex(x => x.Name == previous.Name);
+            var scoreboardPercent = (double)(infoEntry.Scoreboard.Count - position - 1) /
+                                    (infoEntry.Scoreboard.Count - 1) * 100;
             var totalMatchesWon = position == 0
                 ? previous.TotalMatchesWon + 1
                 : previous.TotalMatchesWon;
-            UpdateList(previous.ServersPopularity, info.Endpoint);
-            UpdateList(previous.GameModePopularity, info.GameMode);
-            UpdateList(previous.MatchesPerDay, info.Timestamp.Date);
-            previous.TotalKills += info.Scoreboard[position].Kills;
-            previous.TotalDeaths += info.Scoreboard[position].Deaths;
+
+            UpdateList(previous.ServersPopularity, infoEntry.Endpoint);
+            UpdateList(previous.GameModePopularity, infoEntry.GameMode);
+            UpdateList(previous.MatchesPerDay, infoEntry.Timestamp.Date);
+
+            previous.TotalKills += infoEntry.Scoreboard[position].Kills;
+            previous.TotalDeaths += infoEntry.Scoreboard[position].Deaths;
 
             var averageScoreboardPercent = (previous.AverageScoreboardPercent *
                                             previous.TotalMatchesPlayed + scoreboardPercent) /
                                            (previous.TotalMatchesPlayed + 1);
-            var lastMatchPlayed = info.Timestamp > previous.LastMatchPlayed
-                ? info.Timestamp
+            var lastMatchPlayed = infoEntry.Timestamp > previous.LastMatchPlayed
+                ? infoEntry.Timestamp
                 : previous.LastMatchPlayed;
             var ignore = previous.TotalMatchesPlayed < 10 || previous.TotalDeaths == 0;
             var killToDeathRatio = ignore ? 0 : (double)previous.TotalKills / previous.TotalDeaths;

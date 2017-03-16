@@ -2,19 +2,15 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using Newtonsoft.Json;
 
-namespace Kontur.GameStats.Server.Models
+namespace Kontur.GameStats.Server.Models.DatabaseEntries
 {
     [Table("Matches")]
-    public class MatchInfo
+    public class MatchInfoEntry
     {
         [Key]
-        [JsonIgnore]
         public string Key { get; set; }
-        [JsonIgnore]
         public string Endpoint { get; set; }
-        [JsonIgnore]
         public DateTime Timestamp { get; set; }
 
         public string Map { get; set; }
@@ -23,9 +19,8 @@ namespace Kontur.GameStats.Server.Models
         public int TimeLimit { get; set; }
         public double TimeElapsed { get; set; }
 
-        public virtual List<Score> Scoreboard { get; set; }
+        public virtual List<ScoreEntry> Scoreboard { get; set; }
 
-        [JsonIgnore]
-        public virtual RecentMatch RecentMatch { get; set; }
+        public virtual RecentMatchEntry RecentMatchEntry { get; set; }
     }
 }

@@ -1,43 +1,40 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Data.Entity;
+using System.Linq;
 using Kontur.GameStats.Server.Database;
-using Kontur.GameStats.Server.Models;
+using Kontur.GameStats.Server.Models.DatabaseEntries;
 
 namespace Kontur.GameStats.Server.StatisticsUpdaters
 {
     public class RecentMatchesUpdater : IStatisticsUpdater
     {
-        private readonly SortedList<DateTime, RecentMatch> recentMatches;
-        private const int maxServersCount = 50;
-
-        public RecentMatchesUpdater(SortedList<DateTime, RecentMatch> recentMatches)
+        public void Update(MatchInfoEntry infoEntry, DatabaseContext databaseContext)
         {
-            this.recentMatches = recentMatches;
-        }
+            const int maxServersCount = 50;
 
-        public void Update(MatchInfo info, DatabaseContext databaseContext)
-        {
+            foreach (var entry in databaseContext.ChangeTracker.Entries<MatchInfoEntry>())
+                entry.State = EntityState.Unchanged;
+            var recentMatches = databaseContext.RecentMatches.OrderByDescending(x => x.Timestamp).ToList();
+
             if (recentMatches.Count < maxServersCount)
-                recentMatches.Add(
-                    info.Timestamp,
-                    new RecentMatch
+                databaseContext.RecentMatches.Add(
+                    new RecentMatchEntry
                     {
-                        Key = info.Key,
-                        Server = info.Endpoint,
-                        Timestamp = info.Timestamp,
+                        Key = infoEntry.Key,
+                        Server = infoEntry.Endpoint,
+                        Timestamp = infoEntry.Timestamp,
                     });
-            else if (recentMatches.Values[recentMatches.Count - 1].Timestamp < info.Timestamp)
+            else if (recentMatches[recentMatches.Count - 1].Timestamp < infoEntry.Timestamp)
             {
-                recentMatches.RemoveAt(recentMatches.Count - 1);
-                recentMatches.Add(
-                    info.Timestamp,
-                    new RecentMatch
+                databaseContext.RecentMatches.Remove(recentMatches[recentMatches.Count - 1]);
+                databaseContext.RecentMatches.Add(
+                    new RecentMatchEntry
                     {
-                        Key = info.Key,
-                        Server = info.Endpoint,
-                        Timestamp = info.Timestamp,
+                        Key = infoEntry.Key,
+                        Server = infoEntry.Endpoint,
+                        Timestamp = infoEntry.Timestamp,
                     });
             }
+
         }
     }
 }

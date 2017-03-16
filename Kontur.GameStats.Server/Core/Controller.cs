@@ -2,10 +2,12 @@
 using System.Collections.Generic;
 using System.Linq;
 using Kontur.GameStats.Server.Database;
-using Kontur.GameStats.Server.Models;
+using Kontur.GameStats.Server.Models.DatabaseEntries;
+using Kontur.GameStats.Server.Models.Serialization;
 using Kontur.GameStats.Server.Routing.Attributes;
 
 using ServerStatistics = Kontur.GameStats.Server.Models.Serialization.ServerStatistics;
+using StringEntry = Kontur.GameStats.Server.Models.DatabaseEntries.StringEntry;
 
 namespace Kontur.GameStats.Server.Core
 {
@@ -15,9 +17,9 @@ namespace Kontur.GameStats.Server.Core
 
         [Put]
         [Route("/servers/<endpoint>/info")]
-        public void PutServerInfo(Models.Serialization.ServerInfo serverInfo, string endpoint)
+        public void PutServerInfo(ServerInfo serverInfo, string endpoint)
         {
-            statistics.PutServerInfo(endpoint, new ServerInfo
+            statistics.PutServerInfo(endpoint, new ServerInfoEntry
             {
                 Name = serverInfo.Name,
                 GameModes = serverInfo.GameModes.Select(x => new StringEntry { String = x}).ToList()
@@ -32,9 +34,9 @@ namespace Kontur.GameStats.Server.Core
 
         [Put]
         [Route("/servers/<endpoint>/matches/<timestamp>")]
-        public void PutMatchInfo(MatchInfo serverInfo, string endpoint, DateTime timestamp)
+        public void PutMatchInfo(MatchInfoEntry serverInfoEntry, string endpoint, DateTime timestamp)
         {
-            statistics.PutMatchInfo(endpoint, timestamp, serverInfo);
+            statistics.PutMatchInfo(endpoint, timestamp, serverInfoEntry);
         }
 
         [Route("/servers/<endpoint>/matches/<timestamp>")]
@@ -44,7 +46,7 @@ namespace Kontur.GameStats.Server.Core
         }
 
         [Route("/servers/info")]
-        public List<ServerInfo> GetServersInfo()
+        public List<ServersInfo> GetServersInfo()
         {
             return statistics.GetServersInfo();
         }
@@ -52,7 +54,7 @@ namespace Kontur.GameStats.Server.Core
         [Route("/servers/<endpoint>/stats")]
         public ServerStatistics GetServerStatisctics(string endpoint)
         {
-            return new ServerStatistics(statistics.GetServerStatistics(endpoint));
+            return statistics.GetServerStatistics(endpoint);
         }
 
         [Route("/players/<name>/stats")]

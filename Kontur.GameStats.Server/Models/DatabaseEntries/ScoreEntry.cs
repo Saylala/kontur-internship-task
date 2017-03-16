@@ -1,12 +1,10 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
-using Newtonsoft.Json;
 
-namespace Kontur.GameStats.Server.Models
+namespace Kontur.GameStats.Server.Models.DatabaseEntries
 {
     [Table("Scores")]
-    public class Score
+    public class ScoreEntry
     {
-        [JsonIgnore]
         public int Id { get; set; }
 
         public string Name { get; set; }

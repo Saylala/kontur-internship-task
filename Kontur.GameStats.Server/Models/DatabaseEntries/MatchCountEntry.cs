@@ -1,7 +1,7 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
 
-namespace Kontur.GameStats.Server.Models
+namespace Kontur.GameStats.Server.Models.DatabaseEntries
 {
     public class MatchCountEntry
     {

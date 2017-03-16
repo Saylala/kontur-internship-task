@@ -34,7 +34,24 @@ namespace Kontur.GameStats.Server.Routing
             getMethods = GetMethods(typeof(TController), isPut: false);
         }
 
-        public KeyValuePair<GroupCollection, MethodInfo> GetMatch(string route, Dictionary<Regex, MethodInfo> methods)
+        public void Put(string route, string json)
+        {
+            var match = GetMatch(route, putMethods);
+
+            var jsonParameter = JsonConvert.DeserializeObject(json, parametersCache[match.Value][0].ParameterType);
+            var argumentsList = new List<object> {jsonParameter};
+            argumentsList.AddRange(GetArguments(match, 1));
+
+            WrapInvocation(() => match.Value.Invoke(controller, argumentsList.ToArray()));
+        }
+
+        public string Get(string route)
+        {
+            var match = GetMatch(route, getMethods);
+            return JsonConvert.SerializeObject(WrapInvocation(() => match.Value.Invoke(controller, GetArguments(match))));
+        }
+
+        private KeyValuePair<GroupCollection, MethodInfo> GetMatch(string route, Dictionary<Regex, MethodInfo> methods)
         {
             var regex = methods.Keys.FirstOrDefault(x => x.IsMatch(route));
             if (regex == null)
@@ -43,42 +60,30 @@ namespace Kontur.GameStats.Server.Routing
             return new KeyValuePair<GroupCollection, MethodInfo>(regex.Match(route).Groups, methods[regex]);
         }
 
-        public List<object> GetArguments(KeyValuePair<GroupCollection, MethodInfo> match, int skipCount = 0)
+        private object[] GetArguments(KeyValuePair<GroupCollection, MethodInfo> match, int skipCount = 0)
         {
             return parametersCache[match.Value]
                 .Skip(skipCount)
                 .Select(x => GetParameter(x, match.Key[x.Name].Value))
-                .ToList();
+                .ToArray();
         }
 
-        public void Put(string route, string json)
+        private static object WrapInvocation(Func<object> invoke)
         {
-            var match = GetMatch(route, putMethods);
-
-            var jsonParameter = JsonConvert.DeserializeObject(json, parametersCache[match.Value].First().ParameterType);
-            var argumentsList = new List<object> {jsonParameter};
-            argumentsList.AddRange(GetArguments(match, 1));
-
-            match.Value.Invoke(controller, argumentsList.ToArray());
-        }
-
-        public string Get(string route)
-        {
-            var match = GetMatch(route, getMethods);
-            var arguments = GetArguments(match);
-            return JsonConvert.SerializeObject(match.Value.Invoke(controller, arguments.ToArray()));
+            try
+            {
+                return invoke();
+            }
+            catch (TargetInvocationException e)
+            {
+                throw e.InnerException ?? e;
+            }
         }
 
         private static object GetParameter(ParameterInfo parameterInfo, string value)
         {
-            if (string.IsNullOrEmpty(value))
-            {
-                if (parameterInfo.HasDefaultValue)
-                    return Type.Missing;
-
-                if (parameterInfo.IsOptional)
-                    return null;
-            }
+            if (string.IsNullOrEmpty(value) && parameterInfo.HasDefaultValue)
+                return Type.Missing;
 
             try
             {

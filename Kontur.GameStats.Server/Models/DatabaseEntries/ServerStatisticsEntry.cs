@@ -1,15 +1,13 @@
 ﻿using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using Newtonsoft.Json;
 
-namespace Kontur.GameStats.Server.Models
+namespace Kontur.GameStats.Server.Models.DatabaseEntries
 {
     [Table("ServersStatistics")]
-    public class ServerStatistics
+    public class ServerStatisticsEntry
     {
         [Key]
-        [JsonIgnore]
         public string Endpoint { get; set; }
 
         public int TotalMatchesPlayed { get; set; }
@@ -21,13 +19,9 @@ namespace Kontur.GameStats.Server.Models
         public virtual List<StringEntry> Top5GameModes { get; set; }
         public virtual List<StringEntry> Top5Maps { get; set; }
 
-        [JsonIgnore]
         public virtual List<DayCountEntry> MatchesPerDay { get; set; }
-        [JsonIgnore]
         public virtual List<MatchCountEntry> PopulationPerMatch { get; set; }
-        [JsonIgnore]
         public virtual List<NameCountEntry> GameModePopularity { get; set; }
-        [JsonIgnore]
         public virtual List<NameCountEntry> MapPopularity { get; set; }
     }
 }

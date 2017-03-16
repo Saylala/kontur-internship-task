@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Kontur.GameStats.Server.Models
+namespace Kontur.GameStats.Server.Models.DatabaseEntries
 {
     public class DayCountEntry
     {

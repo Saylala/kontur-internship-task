@@ -1,5 +1,6 @@
 ﻿using System;
 using Fclp;
+using Kontur.GameStats.Server.Tests;
 
 namespace Kontur.GameStats.Server.Core
 {
@@ -7,12 +8,15 @@ namespace Kontur.GameStats.Server.Core
     {
         public static void Main(string[] args)
         {
+            //new PerformanceTests().TestGetMatchInfo(50);
+
             var commandLineParser = new FluentCommandLineParser<Options>();
 
             commandLineParser
                 .Setup(options => options.Prefix)
                 .As("prefix")
-                .SetDefault("http://+:8080/")
+                .SetDefault("http://localhost:8080/")
+                //.SetDefault("http://+:8080/")
                 .WithDescription("HTTP prefix to listen on");
 
             commandLineParser

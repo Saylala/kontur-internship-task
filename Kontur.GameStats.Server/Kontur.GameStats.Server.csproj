@@ -92,7 +92,14 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Database\DatabaseInitializer.cs" />
-    <Compile Include="Models\StringEntry.cs" />
+    <Compile Include="Models\DatabaseEntries\StringEntry.cs" />
+    <Compile Include="Models\Serialization\BestPlayer.cs" />
+    <Compile Include="Models\Serialization\MatchInfo.cs" />
+    <Compile Include="Models\Serialization\PlayerStatistics.cs" />
+    <Compile Include="Models\Serialization\PopularServer.cs" />
+    <Compile Include="Models\Serialization\RecentMatch.cs" />
+    <Compile Include="Models\Serialization\Score.cs" />
+    <Compile Include="Models\Serialization\ServersInfo.cs" />
     <Compile Include="Routing\Attributes\PutAttribute.cs" />
     <Compile Include="Core\Controller.cs" />
     <Compile Include="Routing\Attributes\RouteAttribute.cs" />
@@ -101,35 +108,34 @@
     <Compile Include="Exceptions\InvalidRequestException.cs" />
     <Compile Include="Exceptions\NotFoundException.cs" />
     <Compile Include="Models\Serialization\ServerInfo.cs" />
-    <Compile Include="Models\ServersInfo.cs" />
     <Compile Include="Models\Serialization\ServerStatistics.cs" />
     <Compile Include="Routing\RouteHandler.cs" />
     <Compile Include="StatisticsUpdaters\IStatisticsUpdater.cs" />
     <Compile Include="Tests\DatabaseTests.cs" />
-    <Compile Include="Models\BestPlayer.cs" />
+    <Compile Include="Models\DatabaseEntries\BestPlayerEntry.cs" />
     <Compile Include="StatisticsUpdaters\BestPlayersUpdater.cs" />
     <Compile Include="Database\DatabaseContext.cs" />
-    <Compile Include="Models\DayCountEntry.cs" />
-    <Compile Include="Models\MatchCountEntry.cs" />
-    <Compile Include="Models\MatchInfo.cs" />
+    <Compile Include="Models\DatabaseEntries\DayCountEntry.cs" />
+    <Compile Include="Models\DatabaseEntries\MatchCountEntry.cs" />
+    <Compile Include="Models\DatabaseEntries\MatchInfoEntry.cs" />
     <Compile Include="StatisticsUpdaters\PlayerStatisticsUpdater.cs" />
-    <Compile Include="Models\PopularServer.cs" />
+    <Compile Include="Models\DatabaseEntries\PopularServerEntry.cs" />
     <Compile Include="StatisticsUpdaters\PopularServersUpdater.cs" />
-    <Compile Include="Models\RecentMatch.cs" />
+    <Compile Include="Models\DatabaseEntries\RecentMatchEntry.cs" />
     <Compile Include="StatisticsUpdaters\RecentMatchesUpdater.cs" />
     <Compile Include="StatisticsUpdaters\ServerStatisticsUpdater.cs" />
     <Compile Include="StatisticsUpdaters\StatisticsUpdater.cs" />
-    <Compile Include="Models\NameCountEntry.cs" />
-    <Compile Include="Models\PlayerStatistics.cs" />
-    <Compile Include="Models\Score.cs" />
-    <Compile Include="Models\ServerInfo.cs" />
-    <Compile Include="Models\ServerStatistics.cs" />
+    <Compile Include="Models\DatabaseEntries\NameCountEntry.cs" />
+    <Compile Include="Models\DatabaseEntries\PlayerStatisticsEntry.cs" />
+    <Compile Include="Models\DatabaseEntries\ScoreEntry.cs" />
+    <Compile Include="Models\DatabaseEntries\ServerInfoEntry.cs" />
+    <Compile Include="Models\DatabaseEntries\ServerStatisticsEntry.cs" />
     <Compile Include="Core\StatServer.cs" />
     <Compile Include="Core\EntryPoint.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Tests\IntegrationTests.cs" />
+    <Compile Include="Tests\PerformanceTests.cs" />
     <Compile Include="Tests\RouteHandlingTests.cs" />
-    <Compile Include="Tests\SerializationTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config">

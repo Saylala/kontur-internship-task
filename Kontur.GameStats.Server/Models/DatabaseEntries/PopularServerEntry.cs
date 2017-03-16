@@ -1,8 +1,10 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
-namespace Kontur.GameStats.Server.Models
+namespace Kontur.GameStats.Server.Models.DatabaseEntries
 {
-    public class PopularServer
+    [Table("PopularServers")]
+    public class PopularServerEntry
     {
         [Key]
         public string Endpoint { get; set; }
