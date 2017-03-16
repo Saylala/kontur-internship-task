@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 using Fclp.Internals.Extensions;
 using Kontur.GameStats.Server.Exceptions;
 using Kontur.GameStats.Server.Routing.Attributes;
@@ -36,19 +37,12 @@ namespace Kontur.GameStats.Server.Routing
 
         public void Put(string route, string json)
         {
-            var match = GetMatch(route, putMethods);
-
-            var jsonParameter = JsonConvert.DeserializeObject(json, parametersCache[match.Value][0].ParameterType);
-            var argumentsList = new List<object> {jsonParameter};
-            argumentsList.AddRange(GetArguments(match, 1));
-
-            WrapInvocation(() => match.Value.Invoke(controller, argumentsList.ToArray()));
+            PutAsync(route, json).Wait();
         }
 
         public string Get(string route)
         {
-            var match = GetMatch(route, getMethods);
-            return JsonConvert.SerializeObject(WrapInvocation(() => match.Value.Invoke(controller, GetArguments(match))));
+            return GetAsync(route).Result;
         }
 
         private KeyValuePair<GroupCollection, MethodInfo> GetMatch(string route, Dictionary<Regex, MethodInfo> methods)
@@ -68,15 +62,51 @@ namespace Kontur.GameStats.Server.Routing
                 .ToArray();
         }
 
-        private static object WrapInvocation(Func<object> invoke)
+        public async Task PutAsync(string route, string json)
         {
+            var match = GetMatch(route, putMethods);
+
+            var jsonParameter = JsonConvert.DeserializeObject(json, parametersCache[match.Value].First().ParameterType);
+            var argumentsList = new List<object> { jsonParameter };
+            argumentsList.AddRange(GetArguments(match, 1));
+
             try
             {
-                return invoke();
+                var result = match.Value.Invoke(controller, argumentsList.ToArray());
+                var task = result as Task;
+                if (task != null)
+                    await task;
             }
             catch (TargetInvocationException e)
             {
                 throw e.InnerException ?? e;
+            }
+            catch (AggregateException e)
+            {
+                throw e.InnerExceptions.FirstOrDefault() ?? e;
+            }
+        }
+
+        public async Task<string> GetAsync(string route)
+        {
+            var match = GetMatch(route, getMethods);
+            var arguments = GetArguments(match);
+
+            try
+            {
+                var methodResult = match.Value.Invoke(controller, arguments);
+                var taskResult = methodResult as Task;
+                return taskResult != null
+                    ? JsonConvert.SerializeObject(await (dynamic)methodResult)
+                    : JsonConvert.SerializeObject(methodResult);
+            }
+            catch (TargetInvocationException e)
+            {
+                throw e.InnerException ?? e;
+            }
+            catch (AggregateException e)
+            {
+                throw e.InnerExceptions.FirstOrDefault() ?? e;
             }
         }
 

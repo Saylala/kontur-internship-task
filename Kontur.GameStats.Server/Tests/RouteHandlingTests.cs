@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using FluentAssertions;
 using Kontur.GameStats.Server.Exceptions;
 using Kontur.GameStats.Server.Routing;
@@ -94,6 +95,23 @@ namespace Kontur.GameStats.Server.Tests
         {
             Assert.Throws<NotFoundException>(() => routeHandler.Get("/t/throws/a/b"));
         }
+
+        [Test]
+        public async Task TestAsync()
+        {
+            var entry = new TestEntity
+            {
+                A = "abc",
+                B = 3
+            };
+
+            var route = "/test/put_test/abc";
+
+            await routeHandler.PutAsync(route, JsonConvert.SerializeObject(entry));
+            var a = await routeHandler.GetAsync(route);
+
+            JsonConvert.DeserializeObject<TestEntity>(a).ShouldBeEquivalentTo(entry);
+        }
     }
 
     internal class TestEntity
@@ -105,6 +123,21 @@ namespace Kontur.GameStats.Server.Tests
     internal class TestController
     {
         private readonly Dictionary<string, TestEntity> testEntries = new Dictionary<string, TestEntity>();
+
+        [Put]
+        [Route("/test/async/<a>")]
+        public async Task PutAsync(TestEntity entry, string a)
+        {
+            await Task.Delay(1000);
+            testEntries[a] = entry;
+        }
+
+        [Route("/test/async/<a>")]
+        public async Task<TestEntity> GetAsync(string a)
+        {
+            await Task.Delay(1000);
+            return testEntries[a];
+        }
 
         [Put]
         [Route("/test/put_test/<a>")]
