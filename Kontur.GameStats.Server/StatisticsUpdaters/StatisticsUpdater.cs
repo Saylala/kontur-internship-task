@@ -19,16 +19,10 @@ namespace Kontur.GameStats.Server.StatisticsUpdaters
             };
         }
         // todo check and fix statistics updaters (Date related entries)
-        public void Update(MatchInfoEntry infoEntry)
+        public void Update(MatchInfoEntry infoEntry, DatabaseContext databaseContext)
         {
-            using (var databaseContext = new DatabaseContext())
-            {
-                foreach (var statisticsUpdater in updaters)
-                    statisticsUpdater.Update(infoEntry, databaseContext);
-
-                databaseContext.SaveChanges();
-            }
-
+            foreach (var statisticsUpdater in updaters)
+                statisticsUpdater.Update(infoEntry, databaseContext);
         }
     }
 }

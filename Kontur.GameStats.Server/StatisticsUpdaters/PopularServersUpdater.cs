@@ -11,33 +11,31 @@ namespace Kontur.GameStats.Server.StatisticsUpdaters
             const int maxServersCount = 50;
 
             var popularServers = databaseContext.PopularServers.OrderByDescending(x => x.AverageMatchesPerDay).ToList();
-            var serverInfo = databaseContext.ServerStatistics.Find(infoEntry.Endpoint);
-
-            if (serverInfo == null)
-            {
+            var serverStatistics = databaseContext.ServerStatistics.Find(infoEntry.Endpoint);
+            var serverInfo = databaseContext.Servers.Find(infoEntry.Endpoint);
+            if (serverStatistics == null || serverInfo == null)
                 return;
-            }
 
-            var serverName = databaseContext.Servers.Find(infoEntry.Endpoint).Name;
-            var previous = popularServers.Find(x => x.Name == serverName);
+            var serverName = serverInfo.Name;
+            var previous = popularServers.Find(x => x.Endpoint == serverInfo.Endpoint);
 
             if (previous != null)
-                previous.AverageMatchesPerDay = serverInfo.AverageMatchesPerDay;
+                previous.AverageMatchesPerDay = serverStatistics.AverageMatchesPerDay;
             else if (popularServers.Count < maxServersCount)
                 databaseContext.PopularServers.Add(new PopularServerEntry
                 {
                     Endpoint = infoEntry.Endpoint,
                     Name = serverName,
-                    AverageMatchesPerDay = serverInfo.AverageMatchesPerDay
+                    AverageMatchesPerDay = serverStatistics.AverageMatchesPerDay
                 });
-            else if (popularServers[popularServers.Count - 1].AverageMatchesPerDay < serverInfo.AverageMatchesPerDay)
+            else if (popularServers[popularServers.Count - 1].AverageMatchesPerDay < serverStatistics.AverageMatchesPerDay)
             {
                 databaseContext.PopularServers.Remove(popularServers[popularServers.Count - 1]);
                 databaseContext.PopularServers.Add(new PopularServerEntry
                 {
                     Endpoint = infoEntry.Endpoint,
                     Name = serverName,
-                    AverageMatchesPerDay = serverInfo.AverageMatchesPerDay
+                    AverageMatchesPerDay = serverStatistics.AverageMatchesPerDay
                 });
             }
 
