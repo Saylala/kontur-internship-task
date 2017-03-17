@@ -6,30 +6,25 @@ namespace Kontur.GameStats.Server.Database
 {
     public class DatabaseInitializer
     {
-        private readonly List<Action<SQLiteConnection>> initializers;
-
-        public DatabaseInitializer()
+        private static readonly List<Action<SQLiteConnection>> initializers = new List<Action<SQLiteConnection>>
         {
-            initializers = new List<Action<SQLiteConnection>>
-            {
-                InitializeServersTable,
-                InitializeMatchesTable,
-                InitializeScoresTable,
-                InitializeServersStatisticsTable,
-                InitializePlayersStatisticsTable,
+            InitializeServersTable,
+            InitializeMatchesTable,
+            InitializeScoresTable,
+            InitializeServersStatisticsTable,
+            InitializePlayersStatisticsTable,
 
-                InitializeRecentMatchesTable,
-                InitializeBestPlayersTable,
-                InitializePopularServersTable,
+            InitializeRecentMatchesTable,
+            InitializeBestPlayersTable,
+            InitializePopularServersTable,
 
-                InitializeStringEntriesTable,
-                InitializeDayCountEntriesTable,
-                InitializeNameCountEntriesTable,
-                InitializeMatchCountEntriesTable
-            };
-        }
+            InitializeStringEntriesTable,
+            InitializeDayCountEntriesTable,
+            InitializeNameCountEntriesTable,
+            InitializeMatchCountEntriesTable
+        };
 
-        public void InitializeDatabase(DatabaseContext context)
+        public static void InitializeDatabase(DatabaseContext context)
         {
             using (var connection = new SQLiteConnection(context.Database.Connection.ConnectionString))
             {
@@ -40,7 +35,7 @@ namespace Kontur.GameStats.Server.Database
             }
         }
 
-        private void InitializeServersTable(SQLiteConnection connection)
+        private static void InitializeServersTable(SQLiteConnection connection)
         {
             ExecuteCommand(
                 "CREATE TABLE IF NOT EXISTS Servers (" +
@@ -49,7 +44,7 @@ namespace Kontur.GameStats.Server.Database
                 connection);
         }
 
-        private void InitializeMatchesTable(SQLiteConnection connection)
+        private static void InitializeMatchesTable(SQLiteConnection connection)
         {
             ExecuteCommand(
                 "CREATE TABLE IF NOT EXISTS Matches (" +
@@ -64,7 +59,7 @@ namespace Kontur.GameStats.Server.Database
                 connection);
         }
 
-        private void InitializeScoresTable(SQLiteConnection connection)
+        private static void InitializeScoresTable(SQLiteConnection connection)
         {
             ExecuteCommand(
                 "CREATE TABLE IF NOT EXISTS Scores (" +
@@ -78,7 +73,7 @@ namespace Kontur.GameStats.Server.Database
                 connection);
         }
 
-        private void InitializeServersStatisticsTable(SQLiteConnection connection)
+        private static void InitializeServersStatisticsTable(SQLiteConnection connection)
         {
             ExecuteCommand(
                 "CREATE TABLE IF NOT EXISTS ServersStatistics (" +
@@ -91,7 +86,7 @@ namespace Kontur.GameStats.Server.Database
                 connection);
         }
 
-        private void InitializePlayersStatisticsTable(SQLiteConnection connection)
+        private static void InitializePlayersStatisticsTable(SQLiteConnection connection)
         {
             ExecuteCommand(
                 "CREATE TABLE IF NOT EXISTS PlayersStatistics (" +
@@ -111,7 +106,7 @@ namespace Kontur.GameStats.Server.Database
                 connection);
         }
 
-        private void InitializeRecentMatchesTable(SQLiteConnection connection)
+        private static void InitializeRecentMatchesTable(SQLiteConnection connection)
         {
             ExecuteCommand(
                 "CREATE TABLE IF NOT EXISTS RecentMatches (" +
@@ -122,7 +117,7 @@ namespace Kontur.GameStats.Server.Database
                 connection);
         }
 
-        private void InitializeBestPlayersTable(SQLiteConnection connection)
+        private static void InitializeBestPlayersTable(SQLiteConnection connection)
         {
             ExecuteCommand(
                 "CREATE TABLE IF NOT EXISTS BestPlayers (" +
@@ -132,7 +127,7 @@ namespace Kontur.GameStats.Server.Database
                 connection);
         }
 
-        private void InitializePopularServersTable(SQLiteConnection connection)
+        private static void InitializePopularServersTable(SQLiteConnection connection)
         {
             ExecuteCommand(
                 "CREATE TABLE IF NOT EXISTS PopularServers (" +
@@ -142,7 +137,7 @@ namespace Kontur.GameStats.Server.Database
                 connection);
         }
 
-        private void InitializeStringEntriesTable(SQLiteConnection connection)
+        private static void InitializeStringEntriesTable(SQLiteConnection connection)
         {
             ExecuteCommand(
                 "CREATE TABLE IF NOT EXISTS StringEntries (" +
@@ -157,7 +152,7 @@ namespace Kontur.GameStats.Server.Database
                 connection);
         }
 
-        private void InitializeDayCountEntriesTable(SQLiteConnection connection)
+        private static void InitializeDayCountEntriesTable(SQLiteConnection connection)
         {
             ExecuteCommand(
                 "CREATE TABLE IF NOT EXISTS DayCountEntries (" +
@@ -171,7 +166,7 @@ namespace Kontur.GameStats.Server.Database
                 connection);
         }
 
-        private void InitializeNameCountEntriesTable(SQLiteConnection connection)
+        private static void InitializeNameCountEntriesTable(SQLiteConnection connection)
         {
             ExecuteCommand(
                 "CREATE TABLE IF NOT EXISTS NameCountEntries (" +
@@ -189,7 +184,7 @@ namespace Kontur.GameStats.Server.Database
                 connection);
         }
 
-        private void InitializeMatchCountEntriesTable(SQLiteConnection connection)
+        private static void InitializeMatchCountEntriesTable(SQLiteConnection connection)
         {
             ExecuteCommand(
                 "CREATE TABLE IF NOT EXISTS MatchCountEntries (" +
@@ -207,7 +202,7 @@ namespace Kontur.GameStats.Server.Database
                 connection);
         }
 
-        private void ExecuteCommand(string command, SQLiteConnection connection)
+        private static void ExecuteCommand(string command, SQLiteConnection connection)
         {
             using (var sqLiteCommand = new SQLiteCommand(command, connection))
                 sqLiteCommand.ExecuteNonQuery();

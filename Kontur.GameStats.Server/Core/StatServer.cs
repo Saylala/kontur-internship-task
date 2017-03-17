@@ -27,11 +27,7 @@ namespace Kontur.GameStats.Server.Core
         {
             XmlConfigurator.Configure();
             AppDomain.CurrentDomain.SetData("DataDirectory", Directory.GetCurrentDirectory());
-            JsonConvert.DefaultSettings = () => new JsonSerializerSettings
-            {
-                ContractResolver = new CamelCasePropertyNamesContractResolver(),
-                //DateTimeZoneHandling = DateTimeZoneHandling.Utc
-            };
+            JsonConvert.DefaultSettings = () => new JsonSerializerSettings { ContractResolver = new CamelCasePropertyNamesContractResolver() };
 
             routeHandler = RouteHandler.Create(new Controller());
             listener = new HttpListener();
@@ -117,13 +113,13 @@ namespace Kontur.GameStats.Server.Core
             var result = string.Empty;
             try
             {
-                result = GetResponse(listenerContext);
-                listenerContext.Response.StatusCode = (int) HttpStatusCode.OK;
+                result = await GetResponse(listenerContext);
+                listenerContext.Response.StatusCode = (int)HttpStatusCode.OK;
             }
             catch (NotFoundException error)
             {
                 logger.Error(error);
-                listenerContext.Response.StatusCode = (int) HttpStatusCode.NotFound;
+                listenerContext.Response.StatusCode = (int)HttpStatusCode.NotFound;
             }
             catch (Exception error)
             {
@@ -135,16 +131,16 @@ namespace Kontur.GameStats.Server.Core
                 writer.WriteLine(result);
         }
 
-        private string GetResponse(HttpListenerContext listenerContext)
+        private async Task<string> GetResponse(HttpListenerContext listenerContext)
         {
             var route = listenerContext.Request.Url.AbsolutePath;
             switch (listenerContext.Request.HttpMethod)
             {
                 case "GET":
-                    return routeHandler.Get(route);
+                    return await routeHandler.GetAsync(route);
                 case "PUT":
                     var data = new StreamReader(listenerContext.Request.InputStream, listenerContext.Request.ContentEncoding).ReadToEnd();
-                    routeHandler.Put(route, data);
+                    await routeHandler.PutAsync(route, data);
                     return string.Empty;
                 default:
                     throw new InvalidRequestException($"Unsupported method : {listenerContext.Request.HttpMethod}");
