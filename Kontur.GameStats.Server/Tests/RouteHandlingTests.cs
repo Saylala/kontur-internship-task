@@ -39,7 +39,14 @@ namespace Kontur.GameStats.Server.Tests
             Assert.AreEqual("\"kek5keke\"", routeHandler.Get("/t1/int/kek"));
             Assert.AreEqual("\"kek6keke\"", routeHandler.Get("/t1/int/kek/6"));
 
-            Assert.Throws<InvalidRequestException>(() => routeHandler.Get("/t1/int/kek/kek2"));
+            try
+            {
+                routeHandler.Get("/t1/int/kek/kek2");
+            }
+            catch (Exception e)
+            {
+                Assert.True(e.InnerException is InvalidRequestException);
+            }
         }
 
         [Test]
@@ -49,8 +56,23 @@ namespace Kontur.GameStats.Server.Tests
             Assert.AreEqual("\"kek22-Jan-15 15:17:00keke\"", routeHandler.Get("/t/nullabledate/kek/2015-01-22T15:17:00Z"));
             Assert.AreEqual("\"kek01-Jan-01 00:00:00keke\"", routeHandler.Get("/t/nullabledate/kek"));
 
-            Assert.Throws<InvalidRequestException>(() => routeHandler.Get("/t/date/kek/kek2"));
-            Assert.Throws<InvalidRequestException>(() => routeHandler.Get("/t/nullabledate/kek/kek2"));
+            try
+            {
+                routeHandler.Get("/t/date/kek/kek2");
+            }
+            catch (Exception e)
+            {
+                Assert.True(e.InnerException is InvalidRequestException);
+            }
+
+            try
+            {
+                routeHandler.Get("/t/nullabledate/kek/kek2");
+            }
+            catch (Exception e)
+            {
+                Assert.True(e.InnerException is InvalidRequestException);
+            }
         }
 
         [Test]
@@ -93,7 +115,14 @@ namespace Kontur.GameStats.Server.Tests
         [Test]
         public void TestMethodThrows()
         {
-            Assert.Throws<NotFoundException>(() => routeHandler.Get("/t/throws/a/b"));
+            try
+            {
+                routeHandler.Get("/t/throws/a/b");
+            }
+            catch (Exception e)
+            {
+                Assert.True(e.InnerException is NotFoundException);
+            }
         }
 
         [Test]

@@ -56,7 +56,7 @@ namespace Kontur.GameStats.Server.Tests
 
         [Test]
         [Order(001)]
-        public void TestGetEmptyServersInfo()
+        public void GetServersInfo_ReturnsEmptyWhenEmpty()
         {
             var servers = Get("/servers/info");
 
@@ -68,7 +68,7 @@ namespace Kontur.GameStats.Server.Tests
         [TestCase(5)]
         [TestCase(25)]
         [TestCase(100)]
-        public void TestGetEmptyRecentMatches(int count = 5)
+        public void GetRecentMatches_ReturnsEmptyWhenEmpty(int count = 5)
         {
             var number = count == 5 ? "" : $"/{count}";
 
@@ -82,7 +82,7 @@ namespace Kontur.GameStats.Server.Tests
         [TestCase(5)]
         [TestCase(25)]
         [TestCase(100)]
-        public void TestGetEmptyBestPlayers(int count)
+        public void GetBestPlayers_ReturnsEmptyWhenEmpty(int count)
         {
             var number = count == 5 ? "" : $"/{count}";
 
@@ -96,7 +96,7 @@ namespace Kontur.GameStats.Server.Tests
         [TestCase(5)]
         [TestCase(25)]
         [TestCase(100)]
-        public void TestGetEmptyPopularServers(int count)
+        public void GetPopularServers_ReturnsEmptyWhenEmpty(int count)
         {
             var number = count == 5 ? "" : $"/{count}";
 
@@ -107,7 +107,7 @@ namespace Kontur.GameStats.Server.Tests
 
         [Test]
         [Order(100)]
-        public void TestGetServerInfo()
+        public void GetServerInfo_ReturnsCorrectInfo()
         {
             var endpoint = "1.42.23.32-1337";
             var expectedServer = @"{
@@ -124,7 +124,7 @@ namespace Kontur.GameStats.Server.Tests
 
         [Test]
         [Order(200)]
-        public void TestGetMatchInfo()
+        public void GetMatchInfo_ReturnsCorrectInfo()
         {
             var endpoint = "2.42.23.32-1337";
             var server1 = @"{
@@ -164,7 +164,7 @@ namespace Kontur.GameStats.Server.Tests
 
         [Test]
         [Order(300)]
-        public void TestGetServersInfo()
+        public void GetServersInfo_ReturnsCorrectInfo()
         {
             var expectedServers = @"[
                 {
@@ -193,7 +193,7 @@ namespace Kontur.GameStats.Server.Tests
         [TestCase(5)]
         [TestCase(25)]
         [TestCase(100)]
-        public void TestGetRecentMatches(int count)
+        public void GetRecentMatches_ReturnsCorrectInfo(int count)
         {
             var number = count == 5 ? "" : $"/{count}";
 
@@ -232,7 +232,7 @@ namespace Kontur.GameStats.Server.Tests
         [TestCase(5)]
         [TestCase(25)]
         [TestCase(100)]
-        public void TestGetBestPlayers(int count)
+        public void GetBestPlayers_ReturnsCorrectInfo(int count)
         {
             var number = count == 5 ? "" : $"/{count}";
 
@@ -247,7 +247,7 @@ namespace Kontur.GameStats.Server.Tests
         [TestCase(5)]
         [TestCase(25)]
         [TestCase(100)]
-        public void TestGetPopularsServers(int count)
+        public void GetPopularsServers_ReturnsCorrectInfo(int count)
         {
             var number = count == 5 ? "" : $"/{count}";
 
@@ -266,7 +266,7 @@ namespace Kontur.GameStats.Server.Tests
 
         [Test]
         [Order(400)]
-        public void TestGetServerStatistics()
+        public void GetServerStatistics_ReturnsCorrectInfo()
         {
             var endpoint = "4.42.23.32-1337";
             var server1 = @"{
@@ -316,7 +316,7 @@ namespace Kontur.GameStats.Server.Tests
 
         [Test]
         [Order(500)]
-        public void TestGetPlayerStatistics()
+        public void GetPlayerStatistics_ReturnsCorrectInfo()
         {
             var endpoint = "5.42.23.32-1337";
             var server1 = @"{
@@ -369,7 +369,7 @@ namespace Kontur.GameStats.Server.Tests
 
         [Test]
         [Order(600)]
-        public void TestUpdatedGetServerInfo()
+        public void PutServerInfo_UpdatesExistingInfo()
         {
             var endpoint = "1.42.23.32-1337";
             var newServerData = @"{
@@ -386,7 +386,7 @@ namespace Kontur.GameStats.Server.Tests
 
         [Test]
         [Order(601)]
-        public void TestUnadvertisedServerPutsMatch()
+        public void PutMatchFromUnadvertisedServer_ReturnsBadRequest()
         {
             var endpoint = "Nonexistent-Endpoint";
             var timestamp = "2017-01-22T15:17:00Z";
@@ -425,7 +425,7 @@ namespace Kontur.GameStats.Server.Tests
 
         [Test]
         [Order(602)]
-        public void TestGetServerInfoNotFoundEndpointNotExists()
+        public void GetNonexistingServerInfo_ReturnsNotFound()
         {
             var endpoint = "Nonexistent-Endpoint";
 
@@ -441,7 +441,7 @@ namespace Kontur.GameStats.Server.Tests
 
         [Test]
         [Order(603)]
-        public void TestGetMatchInfoNotFoundMatchNotExists()
+        public void GetNonexistingMatchInfo_ReturnsNotFound()
         {
             var timestamp = "207-01-22T15:17:00Z";
             var endpoint = "1.42.23.32-1337";
@@ -458,7 +458,7 @@ namespace Kontur.GameStats.Server.Tests
 
         [Test]
         [Order(604)]
-        public void TestInvalidRoute()
+        public void RequestWithInvalidRoute_ReturnsBadRequest()
         {
             try
             {
@@ -472,7 +472,7 @@ namespace Kontur.GameStats.Server.Tests
 
         [Test]
         [Order(605)]
-        public void TestPutExistingMatch()
+        public void PutExistingMatch_ReturnsBadRequest()
         {
             var endpoint = "5.42.23.32-1337";
             var playerName = "VasyanPRO";

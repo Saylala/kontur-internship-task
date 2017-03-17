@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Net;
@@ -25,15 +26,15 @@ namespace Kontur.GameStats.Server.Tests
         [SetUp]
         public void SetUp()
         {
-            //server = new StatServer();
-            //server.Start(Prefix);
+            server = new StatServer();
+            server.Start(Prefix);
         }
 
         [TearDown]
         public void TearDown()
         {
-            //server.Stop();
-            //server.Dispose();
+            server.Stop();
+            server.Dispose();
         }
 
         public void Put(string path, string data)
@@ -57,7 +58,7 @@ namespace Kontur.GameStats.Server.Tests
             return data;
         }
 
-        [TestCase(50)]
+        [TestCase(15)]
         public void TestGetMatchInfo(int count)
         {
             var endpoint = "2.42.23.32-1337";
@@ -90,13 +91,16 @@ namespace Kontur.GameStats.Server.Tests
 
             var tasks = new List<Task>(count);
 
+            var sw = Stopwatch.StartNew();
             for (var i = 0; i < count; i++)
             {
                 var timestamp = JsonConvert.SerializeObject(DateTime.UtcNow + TimeSpan.FromHours(i)).Replace("\"", "");
                 tasks.Add(Task.Run(() => Put($"/servers/{endpoint}/matches/{timestamp}", match)));
             }
+            Console.WriteLine(sw.ElapsedMilliseconds);
 
             Task.WhenAll(tasks).Wait();
+            Console.WriteLine(sw.ElapsedMilliseconds);
         }
     }
 }
