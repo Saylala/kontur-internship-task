@@ -1,6 +1,5 @@
 ﻿using System;
 using Fclp;
-using Kontur.GameStats.Server.Tests;
 
 namespace Kontur.GameStats.Server.Core
 {
@@ -8,8 +7,6 @@ namespace Kontur.GameStats.Server.Core
     {
         public static void Main(string[] args)
         {
-            //new PerformanceTests().TestGetMatchInfo(50);
-
             var commandLineParser = new FluentCommandLineParser<Options>();
 
             commandLineParser

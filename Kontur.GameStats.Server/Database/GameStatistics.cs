@@ -73,10 +73,6 @@ namespace Kontur.GameStats.Server.Database
 
                 lock (databaseContext)
                 {
-                    // todo wtf is this
-                    //if (databaseContext.Matches == null)
-                    //    Console.WriteLine("Pizdec");
-
                     databaseContext.Matches.Add(infoEntry);
                     databaseContext.SaveChanges();
 
@@ -86,7 +82,6 @@ namespace Kontur.GameStats.Server.Database
             });
         }
 
-        // todo fix keys(make composit key)
         public async Task<MatchInfo> GetMatchInfo(string endpoint, DateTime timestamp)
         {
             return await Task.Run(() =>
@@ -122,7 +117,7 @@ namespace Kontur.GameStats.Server.Database
         {
             return await Task.Run(() =>
             {
-                var entry = databaseContext.PlayersStatistics.Find(name);
+                var entry = databaseContext.PlayersStatistics.FirstOrDefault(x => x.Name.Equals(name, StringComparison.InvariantCultureIgnoreCase));
                 if (entry == null)
                     throw new NotFoundException("Entry not found");
                 return new PlayerStatistics(entry);

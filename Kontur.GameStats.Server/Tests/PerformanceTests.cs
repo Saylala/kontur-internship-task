@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
-using System.Linq;
 using System.Net;
 using System.Text;
 using System.Threading.Tasks;
@@ -39,7 +38,7 @@ namespace Kontur.GameStats.Server.Tests
 
         public void Put(string path, string data)
         {
-            var request = (HttpWebRequest)WebRequest.Create(Prefix + path);
+            var request = (HttpWebRequest) WebRequest.Create(Prefix + path);
             request.Method = "PUT";
             var bytes = Encoding.UTF8.GetBytes(data);
             request.GetRequestStream().Write(bytes, 0, bytes.Length);
@@ -48,10 +47,10 @@ namespace Kontur.GameStats.Server.Tests
 
         public string Get(string path)
         {
-            var request = (HttpWebRequest)WebRequest.Create(Prefix + path);
+            var request = (HttpWebRequest) WebRequest.Create(Prefix + path);
             request.Method = "GET";
 
-            var response = (HttpWebResponse)request.GetResponse();
+            var response = (HttpWebResponse) request.GetResponse();
             var data = new StreamReader(response.GetResponseStream()).ReadToEnd();
 
             response.Close();

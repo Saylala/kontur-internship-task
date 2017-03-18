@@ -6,7 +6,6 @@ namespace Kontur.GameStats.Server.Models.DatabaseEntries
     public class BestPlayerEntry
     {
         public int Id { get; set; }
-
         public string Name { get; set; }
         public double KillToDeathRatio { get; set; }
     }

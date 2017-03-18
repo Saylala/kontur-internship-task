@@ -57,8 +57,6 @@ namespace Kontur.GameStats.Server.StatisticsUpdaters
         {
             previous.MatchesPerDay.AddOrUpdate(x => x.Day == infoEntry.Timestamp.Date,
                 () => new DayCountEntry {Day = infoEntry.Timestamp.Date, Count = 1}, x => x.Count++);
-
-            // todo fix this shit (never updated, only added)
             previous.PopulationPerMatch.AddOrUpdate(x => x.Key == infoEntry.Endpoint + infoEntry.Timestamp,
                 () => new MatchCountEntry
                 {
@@ -67,7 +65,6 @@ namespace Kontur.GameStats.Server.StatisticsUpdaters
                     TimeStamp = infoEntry.Timestamp,
                     Count = infoEntry.Scoreboard.Count
                 }, x => x.Count++);
-
             previous.GameModePopularity.AddOrUpdate(x => x.Name == infoEntry.GameMode,
                 () => new NameCountEntry {Name = infoEntry.GameMode, Count = 1}, x => x.Count++);
             previous.MapPopularity.AddOrUpdate(x => x.Name == infoEntry.Map,
@@ -80,17 +77,14 @@ namespace Kontur.GameStats.Server.StatisticsUpdaters
             previous.MaximumPopulation = previous.PopulationPerMatch.Select(x => x.Count).Max();
             previous.AveragePopulation = (double) previous.PopulationPerMatch.Select(x => x.Count).Sum() / previous.PopulationPerMatch.Count;
 
-            // todo выпилить эти поля
-            //previous.Top5Maps.Clear();
-            //previous.Top5GameModes.Clear();
             previous.Top5GameModes = previous.GameModePopularity
-                .Take(5)
                 .OrderByDescending(x => x.Count)
+                .Take(5)
                 .Select(x => new StringEntry {String = x.Name})
                 .ToList();
             previous.Top5Maps = previous.MapPopularity
-                .Take(5)
                 .OrderByDescending(x => x.Count)
+                .Take(5)
                 .Select(x => new StringEntry {String = x.Name})
                 .ToList();
         }

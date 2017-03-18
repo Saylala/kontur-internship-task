@@ -7,9 +7,6 @@ using Kontur.GameStats.Server.Models.DatabaseEntries;
 using Kontur.GameStats.Server.Models.Serialization;
 using Kontur.GameStats.Server.Routing.Attributes;
 
-using ServerStatistics = Kontur.GameStats.Server.Models.Serialization.ServerStatistics;
-using StringEntry = Kontur.GameStats.Server.Models.DatabaseEntries.StringEntry;
-
 namespace Kontur.GameStats.Server.Core
 {
     public class Controller
@@ -23,7 +20,7 @@ namespace Kontur.GameStats.Server.Core
             await statistics.PutServerInfo(endpoint, new ServerInfoEntry
             {
                 Name = serverInfo.Name,
-                GameModes = serverInfo.GameModes.Select(x => new StringEntry { String = x}).ToList()
+                GameModes = serverInfo.GameModes.Select(x => new StringEntry {String = x}).ToList()
             });
         }
 

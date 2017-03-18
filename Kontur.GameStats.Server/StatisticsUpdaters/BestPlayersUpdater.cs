@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using Kontur.GameStats.Server.Database;
 using Kontur.GameStats.Server.Models.DatabaseEntries;
 
@@ -14,8 +15,9 @@ namespace Kontur.GameStats.Server.StatisticsUpdaters
             var bestPlayers = databaseContext.BestPlayers.OrderByDescending(x => x.KillToDeathRatio).ToList();
             foreach (var player in infoEntry.Scoreboard)
             {
-                var playerInfo = databaseContext.PlayersStatistics.Find(player.Name);
-                if (playerInfo == null || playerInfo.TotalDeaths == 0 || playerInfo.TotalMatchesPlayed < requiredMatchesCount)
+                var playerInfo = databaseContext.PlayersStatistics.FirstOrDefault(x => x.Name.Equals(player.Name, StringComparison.InvariantCultureIgnoreCase));
+                if (playerInfo == null || playerInfo.TotalDeaths == 0 ||
+                    playerInfo.TotalMatchesPlayed < requiredMatchesCount)
                     continue;
 
                 var previous = bestPlayers.Find(x => x.Name == player.Name);

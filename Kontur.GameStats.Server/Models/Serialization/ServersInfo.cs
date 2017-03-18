@@ -6,7 +6,7 @@ namespace Kontur.GameStats.Server.Models.Serialization
     {
         public ServersInfo()
         {
-            
+
         }
 
         public ServersInfo(ServerInfoEntry serverInfoEntry)

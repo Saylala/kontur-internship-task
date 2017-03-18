@@ -8,6 +8,7 @@ namespace Kontur.GameStats.Server.Models.DatabaseEntries
     {
         [Key]
         public string Endpoint { get; set; }
+
         public string Name { get; set; }
         public double AverageMatchesPerDay { get; set; }
     }

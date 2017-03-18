@@ -23,13 +23,10 @@ namespace Kontur.GameStats.Server.Models.DatabaseEntries
         public double KillToDeathRatio { get; set; }
 
         public virtual List<NameCountEntry> ServersPopularity { get; set; }
-
         public virtual List<NameCountEntry> GameModePopularity { get; set; }
-
         public virtual List<DayCountEntry> MatchesPerDay { get; set; }
 
         public int TotalKills { get; set; }
-
         public int TotalDeaths { get; set; }
     }
 }

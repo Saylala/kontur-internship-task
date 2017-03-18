@@ -53,7 +53,8 @@ namespace Kontur.GameStats.Server.Tests
         public void TestDateArgument()
         {
             Assert.AreEqual("\"kek22-Jan-14 15:17:00keke\"", routeHandler.Get("/t/date/kek/2014-01-22T15:17:00Z"));
-            Assert.AreEqual("\"kek22-Jan-15 15:17:00keke\"", routeHandler.Get("/t/nullabledate/kek/2015-01-22T15:17:00Z"));
+            Assert.AreEqual("\"kek22-Jan-15 15:17:00keke\"",
+                routeHandler.Get("/t/nullabledate/kek/2015-01-22T15:17:00Z"));
             Assert.AreEqual("\"kek01-Jan-01 00:00:00keke\"", routeHandler.Get("/t/nullabledate/kek"));
 
             try

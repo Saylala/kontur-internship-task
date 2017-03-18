@@ -19,9 +19,7 @@ namespace Kontur.GameStats.Server.Models.Serialization
             AverageScoreboardPercent = entry.AverageScoreboardPercent;
             MaximumMatchesPerDay = entry.MaximumMatchesPerDay;
             AverageMatchesPerDay = entry.AverageMatchesPerDay;
-
-            LastMatchPlayed = DateTime.SpecifyKind(entry.LastMatchPlayed, DateTimeKind.Utc);
-
+            LastMatchPlayed = entry.LastMatchPlayed;
             KillToDeathRatio = entry.KillToDeathRatio;
         }
 

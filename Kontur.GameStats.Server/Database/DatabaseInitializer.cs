@@ -192,13 +192,6 @@ namespace Kontur.GameStats.Server.Database
                 "Endpoint TEXT," +
                 "TimeStamp TEXT," +
                 "Count INTEGER)",
-                //"PlayerStatistics_Name1 TEXT," +
-                //"ServerStatistics_Endpoint TEXT," +
-                //"ServerStatistics_Endpoint1 TEXT," +
-                //"FOREIGN KEY (PlayerStatistics_Name) REFERENCES PlayersStatistics(PlayerStatistics_Name)," +
-                //"FOREIGN KEY (PlayerStatistics_Name1) REFERENCES PlayersStatistics(PlayerStatistics_Name1)," +
-                //"FOREIGN KEY (ServerStatistics_Endpoint) REFERENCES ServersStatistics(ServerStatistics_Endpoint)," +
-                //"FOREIGN KEY (ServerStatistics_Endpoint1) REFERENCES ServersStatistics(ServerStatistics_Endpoint1))",
                 connection);
         }
 

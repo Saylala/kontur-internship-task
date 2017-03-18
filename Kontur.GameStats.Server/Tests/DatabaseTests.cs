@@ -30,7 +30,11 @@ namespace Kontur.GameStats.Server.Tests
         {
             Console.WriteLine(Directory.GetCurrentDirectory());
             var endpoint = "PutServerInfo_SavesInfo";
-            var data = new ServerInfoEntry { Name = "Test", GameModes = new List<StringEntry> { new StringEntry { String = "DM" } } };
+            var data = new ServerInfoEntry
+            {
+                Name = "Test",
+                GameModes = new List<StringEntry> {new StringEntry {String = "DM"}}
+            };
             await statistics.PutServerInfo(endpoint, data);
             using (var databaseContext = new DatabaseContext())
             {
@@ -44,7 +48,11 @@ namespace Kontur.GameStats.Server.Tests
         public async Task PutServerInfo_ResavesInfo()
         {
             var endpoint = "PutServerInfo_SavesInfo";
-            var newData = new ServerInfoEntry { Name = "NewName", GameModes = new List<StringEntry> { new StringEntry { String = "TM" }, new StringEntry { String = "TDM" } } };
+            var newData = new ServerInfoEntry
+            {
+                Name = "NewName",
+                GameModes = new List<StringEntry> {new StringEntry {String = "TM"}, new StringEntry {String = "TDM"}}
+            };
             await statistics.PutServerInfo(endpoint, newData);
             using (var databaseContext = new DatabaseContext())
             {
@@ -76,7 +84,8 @@ namespace Kontur.GameStats.Server.Tests
             await statistics.PutMatchInfo(endpoint, timeStamp, matchData);
             using (var databaseContext = new DatabaseContext())
             {
-                var result = databaseContext.Matches.Find(matchData.Endpoint + timeStamp.ToString(CultureInfo.InvariantCulture));
+                var result =
+                    databaseContext.Matches.Find(matchData.Endpoint + timeStamp.ToString(CultureInfo.InvariantCulture));
 
 
                 result.ShouldBeEquivalentTo(matchData, o =>
@@ -162,7 +171,8 @@ namespace Kontur.GameStats.Server.Tests
                 {
                     Endpoint = "PutServerInfo_SavesInfo",
                     Name = "NewName",
-                    GameModes = new List<StringEntry> {new StringEntry {String = "TM"}, new StringEntry { String = "TDM" }}
+                    GameModes =
+                        new List<StringEntry> {new StringEntry {String = "TM"}, new StringEntry {String = "TDM"}}
                 },
                 new ServerInfoEntry
                 {
@@ -197,13 +207,15 @@ namespace Kontur.GameStats.Server.Tests
                 {
                     Endpoint = "Server1",
                     Name = "Test",
-                    GameModes = new List<StringEntry> {new StringEntry {String = "DM"}, new StringEntry {String = "TDM"}}
+                    GameModes =
+                        new List<StringEntry> {new StringEntry {String = "DM"}, new StringEntry {String = "TDM"}}
                 },
                 new ServerInfoEntry
                 {
                     Endpoint = "Server2",
                     Name = "Test",
-                    GameModes = new List<StringEntry> {new StringEntry {String = "DM"}, new StringEntry {String = "TDM"}}
+                    GameModes =
+                        new List<StringEntry> {new StringEntry {String = "DM"}, new StringEntry {String = "TDM"}}
                 }
             };
             var matches = new[]
@@ -271,7 +283,8 @@ namespace Kontur.GameStats.Server.Tests
             };
 
             foreach (var server in servers)
-                await statistics.PutServerInfo(server.Endpoint, new ServerInfoEntry { Name = server.Name, GameModes = server.GameModes });
+                await statistics.PutServerInfo(server.Endpoint,
+                    new ServerInfoEntry {Name = server.Name, GameModes = server.GameModes});
             foreach (var match in matches)
                 await statistics.PutMatchInfo(match.Endpoint, match.Timestamp, match);
             var result = statistics.GetPlayerStatistics("Player1").Result;
@@ -293,15 +306,21 @@ namespace Kontur.GameStats.Server.Tests
             {
                 TotalMatchesPlayed = 2,
                 MaximumMatchesPerDay = 1,
-                AverageMatchesPerDay = 2/6.0,
+                AverageMatchesPerDay = 2 / 6.0,
                 MaximumPopulation = 4,
                 AveragePopulation = 3,
-                Top5GameModes = new List<StringEntry> { new StringEntry {String = "TM"}, new StringEntry {String = "TDM"} },
-                Top5Maps = new List<StringEntry> { new StringEntry {String = "DM-HelloWorld" }, new StringEntry {String = "NewMap"} }
+                Top5GameModes =
+                    new List<StringEntry> {new StringEntry {String = "TM"}, new StringEntry {String = "TDM"}},
+                Top5Maps =
+                    new List<StringEntry>
+                    {
+                        new StringEntry {String = "DM-HelloWorld"},
+                        new StringEntry {String = "NewMap"}
+                    }
             };
 
             var result = await statistics.GetServerStatistics(endpoint);
-            
+
             result.ShouldBeEquivalentTo(expected, o =>
             {
                 o.Excluding(x => x.Top5GameModes);
@@ -408,7 +427,7 @@ namespace Kontur.GameStats.Server.Tests
             {
                 Endpoint = "GetBestPlayers_DoesNotCountPlayersWithoutDeaths",
                 Name = "Test",
-                GameModes = new List<StringEntry> { new StringEntry { String = "DM" }, new StringEntry { String = "TDM" } }
+                GameModes = new List<StringEntry> {new StringEntry {String = "DM"}, new StringEntry {String = "TDM"}}
             };
             var match = new MatchInfoEntry
             {
@@ -419,15 +438,27 @@ namespace Kontur.GameStats.Server.Tests
                 TimeElapsed = 25,
                 Scoreboard = new List<ScoreEntry>
                 {
-                    new ScoreEntry { Name = "GetBestPlayers_DoesNotCountPlayersWithoutDeaths1", Deaths = 0, Frags = 2, Kills = 20 },
-                    new ScoreEntry { Name = "GetBestPlayers_DoesNotCountPlayersWithoutDeaths2", Deaths = 0, Frags = 20, Kills = 2}
+                    new ScoreEntry
+                    {
+                        Name = "GetBestPlayers_DoesNotCountPlayersWithoutDeaths1",
+                        Deaths = 0,
+                        Frags = 2,
+                        Kills = 20
+                    },
+                    new ScoreEntry
+                    {
+                        Name = "GetBestPlayers_DoesNotCountPlayersWithoutDeaths2",
+                        Deaths = 0,
+                        Frags = 20,
+                        Kills = 2
+                    }
                 }
             };
 
 
-            await statistics.PutServerInfo(data.Endpoint, new ServerInfoEntry { Name = data.Name, GameModes = data.GameModes });
+            await statistics.PutServerInfo(data.Endpoint,
+                new ServerInfoEntry {Name = data.Name, GameModes = data.GameModes});
             await statistics.PutMatchInfo(data.Endpoint, time, match);
-
 
             new GameStatistics().GetBestPlayers(50).Result.Should().BeEmpty();
         }
@@ -450,7 +481,7 @@ namespace Kontur.GameStats.Server.Tests
             {
                 Endpoint = "GetBestPlayers_ReturnsCorrectStatistics",
                 Name = "Test",
-                GameModes = new List<StringEntry> { new StringEntry { String = "DM" }, new StringEntry { String = "TDM" } }
+                GameModes = new List<StringEntry> {new StringEntry {String = "DM"}, new StringEntry {String = "TDM"}}
             };
 
             var expected = new List<BestPlayerEntry>
@@ -460,7 +491,8 @@ namespace Kontur.GameStats.Server.Tests
             };
 
 
-            await statistics.PutServerInfo(data.Endpoint, new ServerInfoEntry { Name = data.Name, GameModes = data.GameModes });
+            await statistics.PutServerInfo(data.Endpoint,
+                new ServerInfoEntry {Name = data.Name, GameModes = data.GameModes});
             for (var i = 0; i < 20; i++)
             {
                 var timestamp = date + TimeSpan.FromHours(i);
@@ -514,12 +546,23 @@ namespace Kontur.GameStats.Server.Tests
 
             var expected = new List<PopularServerEntry>
             {
-                new PopularServerEntry { Endpoint = "GetBestPlayers_ReturnsCorrectStatistics", Name = "Test", AverageMatchesPerDay = 20},
-                new PopularServerEntry {Endpoint = "GetPopularServers_ReturnsCorrectStatistics1", Name = "Server1", AverageMatchesPerDay = 15}
+                new PopularServerEntry
+                {
+                    Endpoint = "GetBestPlayers_ReturnsCorrectStatistics",
+                    Name = "Test",
+                    AverageMatchesPerDay = 20
+                },
+                new PopularServerEntry
+                {
+                    Endpoint = "GetPopularServers_ReturnsCorrectStatistics1",
+                    Name = "Server1",
+                    AverageMatchesPerDay = 15
+                }
             };
 
 
-            await statistics.PutServerInfo(server.Endpoint, new ServerInfoEntry { Name = server.Name, GameModes = server.GameModes });
+            await statistics.PutServerInfo(server.Endpoint,
+                new ServerInfoEntry {Name = server.Name, GameModes = server.GameModes});
             for (var i = 0; i < 15; i++)
             {
                 await statistics.PutMatchInfo(server.Endpoint, date + TimeSpan.FromHours(i), new MatchInfoEntry
@@ -554,6 +597,73 @@ namespace Kontur.GameStats.Server.Tests
             result.Count.ShouldBeEquivalentTo(expected.Count);
             for (var i = 0; i < expected.Count; i++)
                 result[i].ShouldBeEquivalentTo(expected[i]);
+        }
+
+        [Test]
+        [Order(1200)]
+        public async Task GetServerStatistics_ReturnsCorrectTopMapsAndGameModes()
+        {
+            var endpoint = "PutServerInfo_SavesInfo";
+            var maps = new[] {"Map1", "Map2", "Map3", "Map4", "Map5"};
+            var gameModes = new[] {"GameMode1", "GameMode2", "GameMode3", "GameMode4", "GameMode5"};
+            for (var i = 0; i < maps.Length * 2; i++)
+                await statistics.PutMatchInfo(endpoint, DateTime.UtcNow - TimeSpan.FromDays(i - 10), new MatchInfoEntry
+                {
+                    Map = maps[i / 2],
+                    GameMode = gameModes[i / 2],
+                    FragLimit = 200,
+                    TimeLimit = 200,
+                    TimeElapsed = 152.9,
+                    Scoreboard = new List<ScoreEntry>
+                    {
+                        new ScoreEntry {Name = "Map", Frags = 20, Kills = 21, Deaths = 3},
+                        new ScoreEntry {Name = "GameMode", Frags = 2, Kills = 2, Deaths = 21},
+                        new ScoreEntry {Name = "Third", Frags = 2, Kills = 2, Deaths = 21}
+                    }
+                });
+
+            var expected = new ServerStatisticsEntry
+            {
+                TotalMatchesPlayed = 12,
+                MaximumMatchesPerDay = 2,
+                AverageMatchesPerDay = 0.92307692307692313,
+                MaximumPopulation = 4,
+                AveragePopulation = 3,
+                Top5GameModes =
+                    new List<StringEntry>
+                    {
+                        new StringEntry {String = "GameMode1"},
+                        new StringEntry {String = "GameMode2"},
+                        new StringEntry {String = "GameMode3"},
+                        new StringEntry {String = "GameMode4"},
+                        new StringEntry {String = "GameMode5"}
+                    },
+                Top5Maps =
+                    new List<StringEntry>
+                    {
+                        new StringEntry {String = "Map1"},
+                        new StringEntry {String = "Map2"},
+                        new StringEntry {String = "Map3"},
+                        new StringEntry {String = "Map4"},
+                        new StringEntry {String = "Map5"}
+                    }
+            };
+
+            var result = await statistics.GetServerStatistics(endpoint);
+
+            result.ShouldBeEquivalentTo(expected, o =>
+            {
+                o.Excluding(x => x.Top5GameModes);
+                o.Excluding(x => x.Top5Maps);
+                o.Excluding(x => x.SelectedMemberPath.EndsWith("Id"));
+                return o;
+            });
+            result.Top5GameModes.Count.ShouldBeEquivalentTo(expected.Top5GameModes.Count);
+            for (var i = 0; i < result.Top5GameModes.Count; i++)
+                result.Top5GameModes[i].ShouldBeEquivalentTo(expected.Top5GameModes[i].String);
+            result.Top5Maps.Count.ShouldBeEquivalentTo(expected.Top5Maps.Count);
+            for (var i = 0; i < result.Top5GameModes.Count; i++)
+                result.Top5Maps[i].ShouldBeEquivalentTo(expected.Top5Maps[i].String);
         }
     }
 }

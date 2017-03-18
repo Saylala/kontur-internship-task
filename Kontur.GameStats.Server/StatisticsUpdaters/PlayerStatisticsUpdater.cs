@@ -13,7 +13,7 @@ namespace Kontur.GameStats.Server.StatisticsUpdaters
         {
             foreach (var player in infoEntry.Scoreboard)
             {
-                var previous = databaseContext.PlayersStatistics.Find(player.Name);
+                var previous = databaseContext.PlayersStatistics.FirstOrDefault(x => x.Name.Equals(player.Name, StringComparison.InvariantCultureIgnoreCase));
                 if (previous == null)
                     SetFirstEntry(infoEntry, player.Name, databaseContext);
                 else

@@ -12,9 +12,7 @@ namespace Kontur.GameStats.Server.Models.Serialization
         public RecentMatch(RecentMatchEntry recentMatchEntry)
         {
             Server = recentMatchEntry.Server;
-
-            Timestamp = DateTime.SpecifyKind(recentMatchEntry.Timestamp, DateTimeKind.Utc);
-
+            Timestamp = recentMatchEntry.Timestamp;
             Results = new MatchInfo(recentMatchEntry.MatchInfoEntry);
         }
 

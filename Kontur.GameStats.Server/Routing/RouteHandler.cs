@@ -67,7 +67,7 @@ namespace Kontur.GameStats.Server.Routing
             var match = GetMatch(route, putMethods);
 
             var jsonParameter = JsonConvert.DeserializeObject(json, parametersCache[match.Value].First().ParameterType);
-            var argumentsList = new List<object> { jsonParameter };
+            var argumentsList = new List<object> {jsonParameter};
             argumentsList.AddRange(GetArguments(match, 1));
 
             try
@@ -97,7 +97,7 @@ namespace Kontur.GameStats.Server.Routing
                 var methodResult = match.Value.Invoke(controller, arguments);
                 var taskResult = methodResult as Task;
                 return taskResult != null
-                    ? JsonConvert.SerializeObject(await (dynamic)methodResult)
+                    ? JsonConvert.SerializeObject(await (dynamic) methodResult)
                     : JsonConvert.SerializeObject(methodResult);
             }
             catch (TargetInvocationException e)

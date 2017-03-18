@@ -47,7 +47,7 @@ namespace Kontur.GameStats.Server.Tests
             var request = (HttpWebRequest) WebRequest.Create(Prefix + path);
             request.Method = "GET";
 
-            var response = (HttpWebResponse)request.GetResponse();
+            var response = (HttpWebResponse) request.GetResponse();
             var data = new StreamReader(response.GetResponseStream()).ReadToEnd();
 
             response.Close();
@@ -508,8 +508,6 @@ namespace Kontur.GameStats.Server.Tests
                 Assert.AreEqual("The remote server returned an error: (400) Bad Request.", e.Message);
             }
         }
-
-
 
         private void AssertJsonEquals(string expected, string actual)
         {

@@ -7,6 +7,7 @@ namespace Kontur.GameStats.Server.StatisticsUpdaters
     public class StatisticsUpdater
     {
         private readonly List<IStatisticsUpdater> updaters;
+
         public StatisticsUpdater()
         {
             updaters = new List<IStatisticsUpdater>
@@ -18,7 +19,7 @@ namespace Kontur.GameStats.Server.StatisticsUpdaters
                 new PopularServersUpdater(),
             };
         }
-        // todo check and fix statistics updaters (Date related entries)
+
         public void Update(MatchInfoEntry infoEntry, DatabaseContext databaseContext)
         {
             foreach (var statisticsUpdater in updaters)

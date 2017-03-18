@@ -10,9 +10,9 @@ namespace Kontur.GameStats.Server.Models.DatabaseEntries
     {
         [Key]
         public string Key { get; set; }
+
         public string Endpoint { get; set; }
         public DateTime Timestamp { get; set; }
-
         public string Map { get; set; }
         public string GameMode { get; set; }
         public int FragLimit { get; set; }
@@ -20,7 +20,6 @@ namespace Kontur.GameStats.Server.Models.DatabaseEntries
         public double TimeElapsed { get; set; }
 
         public virtual List<ScoreEntry> Scoreboard { get; set; }
-
         public virtual RecentMatchEntry RecentMatchEntry { get; set; }
     }
 }
